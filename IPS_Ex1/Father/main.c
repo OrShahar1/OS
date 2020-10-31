@@ -57,7 +57,7 @@ char** parser(const char* forest_file, int *p_side_len, int *p_gen_num )
 	if (init_forest == NULL)
 		print_error(msg_err_mem_alloc, __FILE__, __LINE__, __func__);
 
-	read_forest_from_file(fp, init_forest);
+	fp = read_forest_from_file(fp, init_forest);
 
 	close(fp);
 }
@@ -75,7 +75,7 @@ FILE* read_num_from_file(FILE* fp, int *num)
 	return fp; 
 }
 
-void read_forest_from_file(FILE* fp, char** forest) 
+FILE* read_forest_from_file(FILE* fp, char** forest) 
 {
 	char buffer_char;
 
@@ -95,6 +95,8 @@ void read_forest_from_file(FILE* fp, char** forest)
 		forest++;
 	}
 	while (buffer_char != EOF);  
+
+	return fp;
 }
 
 void print_error(const char* msg, const * file, int line, const char* func) {
