@@ -22,5 +22,5 @@ void main(int argc, char** argv)
 			burned_trees_counter++;
 	}
 
-	exit(burned_trees_counter);
+	exit(burned_trees_counter); 
 }

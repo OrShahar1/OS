@@ -2,11 +2,23 @@
 //	or shahar ( orshahar1@mail.tau.ac.il )
 //	michaelz  ( zhitomirsky1@mail.tau.ac.il )
 
+#define _CRT_SECURE_NO_WARNINGS 
+//#pragma warning(disable:4996)
+
 #include <stdio.h>
+#include <stdlib.h> 
+
+
+char* parser(const char* forest_file, int* p_side_len, int* p_gen_num);
+FILE* read_num_from_file(FILE* fp, int* num);
+FILE* read_forest_from_file(FILE* fp, char** forest);
+void print_error(const char* msg, const* file, int line, const char* func);
 
 const char* msg_err_num_args = "wrong amount of arguments (expected 2)";
 const char* msg_err_cannot_open_file = " ";
 const char* msg_err_mem_alloc = " ";
+
+
 
 
 int main(int argc, char** argv) 
@@ -21,12 +33,17 @@ int main(int argc, char** argv)
 	
 
 	int side_len, gen_num;
-	char** init_forest = NULL;
+	char* init_forest = NULL;
 	int burned_trees_counter;
 	
+	 
 	init_forest = parser(argv[1], &side_len, &gen_num);
 
-	
+	printf(" %d %d\n" ,side_len, gen_num);
+	for (int i =0 ; i < side_len; i++, init_forest=init_forest + side_len+1)
+		printf("%s\n", init_forest);
+		
+	/*
 	for (int i = 0; i < gen_num; i++)
 	{
 		// run Son process   --->  burned_trees_counter
@@ -34,12 +51,14 @@ int main(int argc, char** argv)
 		run_forest_iteration(init_forest);
 	}
 
+	*/
 	fclose(f_output); 
 	return 0;
 }
 
 
-char** parser(const char* forest_file, int *p_side_len, int *p_gen_num )
+
+char* parser(const char* forest_file, int *p_side_len, int *p_gen_num)
 {
 	FILE* fp = fopen(forest_file, "r");
 
@@ -47,57 +66,70 @@ char** parser(const char* forest_file, int *p_side_len, int *p_gen_num )
 		print_error(msg_err_cannot_open_file, __FILE__, __LINE__, __func__);
 
 	fp = read_num_from_file(fp, p_side_len);
-
+	
 	fp = read_num_from_file(fp, p_gen_num);
 
 	int side_len = *p_side_len;
 
-	char** init_forest = (char**)malloc(side_len * (side_len + 1));
+	char* init_forest = (char*)malloc(side_len * (side_len + 1));
 
 	if (init_forest == NULL)
 		print_error(msg_err_mem_alloc, __FILE__, __LINE__, __func__);
-
+	
 	fp = read_forest_from_file(fp, init_forest);
-
-	close(fp);
+	
+	fclose(fp);
+	return init_forest; 
 }
 
-FILE* read_num_from_file(FILE* fp, int *num) 
+FILE* read_num_from_file(FILE* fp, int* num)
 {
 	char c;
-	
+	*num = 0;
 	c = fgetc(fp);
 
-	while (c != '\n' && c != EOF) {
-		*num += atoi(c) + (*num) * 10;
+	while (c != '\n' && c != EOF)
+	{
+		*num = atoi(&c) + (*num) * 10;
+		c = fgetc(fp);
 	}
-
-	return fp; 
-}
-
-FILE* read_forest_from_file(FILE* fp, char** forest) 
-{
-	char buffer_char;
-
-	do {
-		buffer_char = fgetc(fp);
-
-		if (buffer_char == EOF) {
-			**forest = '\0';
-			break;
-		}
-
-		if (buffer_char == '\n')
-			**forest = '\0';
-		else
-			**forest = buffer_char; 
-		
-		forest++;
-	}
-	while (buffer_char != EOF);  
 
 	return fp;
 }
+
+
+FILE* read_forest_from_file(FILE* fp, char* forest)
+{
+	char forest_char;
+
+	do {
+		forest_char = fgetc(fp);
+
+		if (forest_char == ',')
+			continue;
+	
+	
+		if (forest_char == EOF) 
+		{
+			*forest = '\0';
+			break;
+		}
+
+		if (forest_char == '\n')
+			*forest = '\0';
+			
+		else
+			*forest = forest_char;
+		
+
+		forest += 1;
+	
+
+	} while (forest_char != EOF);
+
+	return fp;
+}
+
 
 void print_error(const char* msg, const * file, int line, const char* func) {
 

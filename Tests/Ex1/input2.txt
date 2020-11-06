@@ -1,0 +1,7 @@
+5
+8
+G,T,F,F,F
+T,T,F,G,F
+G,G,G,F,G
+G,G,F,T,T
+T,F,G,F,F
