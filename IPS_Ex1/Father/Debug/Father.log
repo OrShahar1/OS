@@ -1,11 +1,6 @@
-﻿  main.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(27,41): warning C4133: 'function': incompatible types - from 'char [114]' to 'const int *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(32,49): warning C4133: 'function': incompatible types - from 'char [114]' to 'const int *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(37,6): warning C4101: 'burned_trees_counter': unreferenced local variable
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(69,49): warning C4133: 'function': incompatible types - from 'char [114]' to 'const int *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(80,42): warning C4133: 'function': incompatible types - from 'char [114]' to 'const int *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(82,44): warning C4047: 'function': 'char **' differs in levels of indirection from 'char *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(82,33): warning C4024: 'read_forest_from_file': different types for formal and actual parameter 2
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(104,45): warning C4028: formal parameter 2 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\main.c(140,9): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'const int *'
+﻿  forest_mgr.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(65,8): warning C4013: 'strcpy' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(98,15): warning C4098: 'run_iterations': 'void' function returning a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(108,19): warning C4098: 'run_forest_iteration': 'void' function returning a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(198,6): warning C4101: 'nearby_trees_num': unreferenced local variable
   Father.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Debug\Father.exe

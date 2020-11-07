@@ -20,6 +20,7 @@ void main(int argc, char** argv)
 	while (*forest != '\0') {
 		if (*forest == 'F')
 			burned_trees_counter++;
+		forest++;
 	}
 
 	exit(burned_trees_counter); 
