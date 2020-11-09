@@ -11,206 +11,181 @@
 #include "process_mgr.h"
 #include "file_parser.h"
 
-void run_forest_iteration(char* forest, char* new_forest, int side_len);
-char* burn_forest_trees(char* forest, char* new_forest, int side_len); 
-char* get_forest_char(char* forest, int side_len, int row, int col);
-void check_and_set_forest_char(char * forest, char* new_forest, int side_len, int row, int col , char check_char, char set_char);
-void burn_neighbors (char* forest, char* new_forest, int side_len, int row, int col);
-char* grow_forest_trees(char* forest, char* new_forest, int side_len); 
-int count_nearby_trees(char* forest, int side_len, int row, int col);
-char* bury_forest_trees(char* forest, char* new_forest, int side_len);  
-
+typedef enum generation_step { BURN, GROW, BURY } gen_step;
 
 const char* BURNED_TREES_COUNTER_PATH = "..\\Debug\\Son.exe"; 
-const int NON_DIAGONAL_NEIGHBORS_OFFSET[8] = { 1,0,  0,1,	 -1,0,  0,-1 };
-const int ALL_NEIGHBORS_OFFSET[16] = { 1,0,  0,1,  -1,0,  0,-1,  1,1,  -1,-1,  -1,1,  1,-1 };
+
+const int NON_DIAGONAL_NEIGHBORS_OFFSET[4][2] = { { 1,0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+const int NON_DIAGONAL_NEIGHBORS_NUM = 4;
+
+const int ALL_NEIGHBORS_OFFSET[8][2] = { {1,0}, { 0,1},  {-1,0},  {0,-1},  {1,1},  {-1,-1},  {-1,1}, { 1,-1} }; 
+const int ALL_NEIGHBORS_NUM = 8;
+
+void run_iterations(char* forest, int side_len, int gen_num, FILE * f_output);
+char* run_forest_iteration(char* forest, char* new_forest, int side_len);
+char* forest_trees_step(char* forest, char* new_forest, int side_len, gen_step step);
+void execute_step(char* forest, char* new_forest, int side_len, gen_step step, int row, int col, char* p_cell);
+void burn_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell);
+void grow_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell);
+void* bury_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell);
+void burn_neighbors(char* forest, char* new_forest, int side_len, int row, int col);
+int count_nearby_trees(char* forest, int side_len, int row, int col);
+char* get_forest_char_pointer(char* forest, int side_len, int row, int col);
+void check_and_set_forest_char(char* forest, char* new_forest, int side_len, int row, int col, char check_char, char set_char);
 
 
-char* get_forest_char(char * forest, int side_len, int row , int col)
-{
-	if (row >= side_len || col >= side_len || row < 0 || col < 0)
-		return NULL;
-	
-	return forest + (side_len * row + col);
-}
-
-void check_and_set_forest_char(char * forest, char* new_forest, int side_len, int row, int col , char check_char, char set_char)
-{
-	char* p_cell = get_forest_char(forest, side_len, row, col);
-	if (p_cell == NULL)
-		return;
-
-	if (*p_cell == check_char )
-		*get_forest_char(new_forest, side_len, row , col) = set_char;
-
-}
-
-void print_forest(char* forest, int side_len)
-{
-	printf("~~~~~~~~~~~~~~\n");
-	for (int row = 0; row < side_len; row++)
-	{
-		for (int col = 0; col < side_len; col++)
-			printf("%c", *get_forest_char(forest, side_len, row, col));
-
-		printf("\n");
-	}
-
-}
-
-
-void run_iterations(char* forest, int side_len, int gen_num)
+void run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 {
 	char* new_forest = (char*)malloc(side_len * side_len + 1);
+	int burned_trees_num, i;
+
 	strcpy(new_forest, forest);
-	int burned_trees_num; 
-	int i;
-	//print_forest(forest, side_len);
-
-
 
 	for (i = 0; i < gen_num; i++)
 	{
 		burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest);
 
-		if (burned_trees_num >= 0)
-		{
-			// valid Son exitcode 
+		if (burned_trees_num < 0)
+			print_error_and_exit(MSG_ERR_INVALID_EXITCODE, __FILE__, __LINE__, __func__);
 
-			printf("%s - %d\n", forest, burned_trees_num);
+		fprintf(f_output, "%s - %d", forest, burned_trees_num);
 
+		// if last iteration do not run another generation 
+		if (i == gen_num - 1)
+			break;
 
-			/*
-			printf("main father (burned_trees_num) = %d\n", burned_trees_num);
-			printf(" %d %d\n", side_len, gen_num);
-			printf("%s\n", forest);
-			*/
-			// fputs(f_output, "%s - %d\n", forest_str, burned_trees_counter)
-		}
-
+		fprintf(f_output, "\n");
 		run_forest_iteration(forest, new_forest, side_len);
 
-		strcpy(forest, new_forest); 
-
+		strcpy(forest, new_forest);
 	}
 
 	free(new_forest);
 	return forest;
 }
 
-
-void run_forest_iteration(char* forest, char* new_forest, int side_len)
-{
-	burn_forest_trees(forest, new_forest, side_len);
-	grow_forest_trees(forest, new_forest, side_len);
-	bury_forest_trees(forest, new_forest, side_len);
+char* run_forest_iteration(char* forest, char* new_forest, int side_len)
+{	
+	new_forest = forest_trees_step(forest, new_forest, side_len, BURN);
+	new_forest = forest_trees_step(forest, new_forest, side_len, GROW);
+	new_forest = forest_trees_step(forest, new_forest, side_len, BURY);
 
 	return new_forest;
 }
 
-void burn_neighbors (char* forest, char* new_forest, int side_len, int row, int col)
-{
-	int row_offset, col_offset, i; 
-	for ( i = 0; i < 8; i += 2)
-	{
-		row_offset = NON_DIAGONAL_NEIGHBORS_OFFSET[i];
-		col_offset = NON_DIAGONAL_NEIGHBORS_OFFSET[i+1];
-		check_and_set_forest_char(forest, new_forest, side_len,
-			row + row_offset, col + col_offset, 'T', 'F');
-	}
-}
-
-char* burn_forest_trees(char* forest, char* new_forest, int side_len)
+char* forest_trees_step(char* forest, char* new_forest, int side_len, gen_step step)
 {
 	int row, col;
 	char* p_cell;
-
+	
 	for (row = 0; row < side_len; row++)
 	{
 		for (col = 0; col < side_len; col++)
 		{
-			p_cell = get_forest_char(forest, side_len, row, col);
+			p_cell = get_forest_char_pointer(forest, side_len, row, col);
 
-			if (*p_cell != 'F')
-				continue;
-
-			burn_neighbors(forest, new_forest, side_len, row, col);
-
+			execute_step(forest, new_forest, side_len, step, row, col, p_cell);
 		}
 	}
 	return new_forest;
 }
 
+void execute_step(char* forest, char* new_forest, int side_len, gen_step step, int row, int col, char* p_cell)
+{
+	switch (step)
+	{
+	case BURN:
+		burn_forest_trees(forest, new_forest, side_len, row, col, p_cell);
+		break;
+
+	case GROW:
+		grow_forest_trees(forest, new_forest, side_len, row, col, p_cell);
+		break;
+
+	case BURY:
+		bury_forest_trees(forest, new_forest, side_len, row, col, p_cell);
+		break;
+	}
+}
+
+void burn_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell)
+{
+	if (*p_cell != 'F')
+		return;
+
+	burn_neighbors(forest, new_forest, side_len, row, col);
+}
+
+void grow_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell)
+{
+	if (*p_cell != 'G')
+		return;
+
+	int nearby_trees_num = count_nearby_trees(forest, side_len, row, col);
+
+	if (nearby_trees_num >= 2)
+		*(get_forest_char_pointer(new_forest, side_len, row, col)) = 'T';
+
+}
+
+void* bury_forest_trees(char* forest, char* new_forest, int side_len, int row, int col, char* p_cell)
+{
+	if (*p_cell != 'F')
+		return;
+
+	*(get_forest_char_pointer(new_forest, side_len, row, col)) = 'G';
+}
+
+void burn_neighbors(char* forest, char* new_forest, int side_len, int row, int col)
+{
+	int row_offset, col_offset, i;
+	for (i = 0; i < NON_DIAGONAL_NEIGHBORS_NUM; i ++)
+	{
+		row_offset = NON_DIAGONAL_NEIGHBORS_OFFSET[i][0];
+		col_offset = NON_DIAGONAL_NEIGHBORS_OFFSET[i][1];
+		check_and_set_forest_char(forest, new_forest, side_len,
+			row + row_offset, col + col_offset, 'T', 'F');
+	}
+}
 
 int count_nearby_trees(char* forest, int side_len, int row, int col)
 {
 	int trees_counter = 0;
 	int row_offset, col_offset, i;
 	char* p_cell;
-	for (i = 0; i < 16; i += 2)
+	for (i = 0; i < ALL_NEIGHBORS_NUM; i ++)
 	{
-		row_offset = ALL_NEIGHBORS_OFFSET[i];
-		col_offset = ALL_NEIGHBORS_OFFSET[i + 1];
+		row_offset = ALL_NEIGHBORS_OFFSET[i][0];
+		col_offset = ALL_NEIGHBORS_OFFSET[i][1];
 
-		p_cell = get_forest_char(forest, side_len, row + row_offset , col + col_offset );
+		p_cell = get_forest_char_pointer(forest, side_len, row + row_offset , col + col_offset );
 
 		if (p_cell == NULL)
 			continue;
 
 		if (*p_cell == 'T')
 			trees_counter++;
-
 	}
 	
 	return trees_counter;
 }
 
-
-char* grow_forest_trees(char* forest, char* new_forest, int side_len)
+char* get_forest_char_pointer(char* forest, int side_len, int row, int col)
 {
-	int row, col;
-	char* p_cell;
-	int nearby_trees_num;
-	for (row = 0; row < side_len; row++)
-	{
-		for (col = 0; col < side_len; col++)
-		{
-			p_cell = get_forest_char(forest, side_len, row, col);
+	if (row >= side_len || col >= side_len || row < 0 || col < 0)
+		return NULL;
 
-			if (*p_cell != 'G')
-				continue;
-
-			nearby_trees_num=count_nearby_trees(forest, side_len, row, col);
-
-			if (nearby_trees_num >= 2) 
-				*(get_forest_char(new_forest, side_len, row, col)) = 'T';
-			
-		}
-	}
-	return new_forest; 
+	return forest + (side_len * row + col);
 }
 
-
-char* bury_forest_trees(char* forest, char* new_forest, int side_len)
+void check_and_set_forest_char(char* forest, char* new_forest, int side_len, int row, int col, char check_char, char set_char)
 {
-	int row, col;
-	char* p_cell;
-	int nearby_trees_num;
-	for (row = 0; row < side_len; row++)
-	{
-		for (col = 0; col < side_len; col++)
-		{
-			p_cell = get_forest_char(forest, side_len, row, col);
+	char* p_cell = get_forest_char_pointer(forest, side_len, row, col);
+	if (p_cell == NULL)
+		return;
 
-			if (*p_cell != 'F')
-				continue;
+	if (*p_cell == check_char)
+		*(get_forest_char_pointer(new_forest, side_len, row, col)) = set_char;
 
-			*(get_forest_char(new_forest, side_len, row, col)) = 'G';
-
-
-		}
-	}
-	return new_forest;
 }
-
 

@@ -1,6 +1,8 @@
 ﻿  forest_mgr.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(65,8): warning C4013: 'strcpy' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(98,15): warning C4098: 'run_iterations': 'void' function returning a value
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(108,19): warning C4098: 'run_forest_iteration': 'void' function returning a value
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(198,6): warning C4101: 'nearby_trees_num': unreferenced local variable
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(42,8): warning C4013: 'strcpy' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(49,59): warning C4047: 'function': 'int' differs in levels of indirection from 'char [120]'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(49,51): warning C4024: 'print_error_and_exit': different types for formal and actual parameter 2
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(64,15): warning C4098: 'run_iterations': 'void' function returning a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(134,3): warning C4033: 'bury_forest_trees' must return a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(137): warning C4716: 'bury_forest_trees': must return a value
   Father.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Debug\Father.exe

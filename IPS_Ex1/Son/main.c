@@ -3,24 +3,24 @@
 //	michaelz  ( zhitomirsky1@mail.tau.ac.il )
 
 #include <stdio.h>
+#include "..\\Father\\common.h"
 
 
 void main(int argc, char** argv)
 {
-	int burned_trees_counter = 0;
+	if (argc != 2) 
+		print_error_and_exit(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
 
-	if (argc != 2){
-		printf("ERROR: wrong amount of arguments (%d instead of 2)\n", argc);
-		printf("File: %s, Line: %d, Function: %s\n", __FILE__, __LINE__, __func__);
-		exit(-1);
-	}
+	int burned_trees_counter = 0;
 
 	char* forest = argv[1];
 
-	while (*forest != '\0') {
+	while (*forest != '\0') 
+	{
 		if (*forest == 'F')
 			burned_trees_counter++;
-		forest++;
+
+		forest++; 
 	}
 
 	exit(burned_trees_counter); 

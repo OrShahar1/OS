@@ -8,22 +8,22 @@
 #include <stdlib.h> 
 #include "common.h"
 
-
+static const int BASE = 10;
 FILE* read_num_from_file(FILE* fp, int* num);
 char* read_forest_from_file(FILE* fp, int side_len);
 
-char* parser(const char* forest_file, int *p_side_len, int *p_gen_num)
+
+char* parser(const char* forest_file, int *p_side_len, int *p_generations_num)
 {
 	FILE* fp = fopen(forest_file, "r");
 	char* init_forest; 
+
 	if (fp == NULL)
-		print_error(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__);
+		print_error_and_exit(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__);
 
 	fp = read_num_from_file(fp, p_side_len);
 	
-	fp = read_num_from_file(fp, p_gen_num);
-
-	int side_len = *p_side_len;
+	fp = read_num_from_file(fp, p_generations_num);
 
 	init_forest = read_forest_from_file(fp, *p_side_len);
 	
@@ -34,13 +34,12 @@ char* parser(const char* forest_file, int *p_side_len, int *p_gen_num)
 
 FILE* read_num_from_file(FILE* fp, int* num)
 {
-	char c;
 	*num = 0;
-	c = fgetc(fp);
+	char c = fgetc(fp);
 
 	while (c != '\n' && c != EOF)
 	{
-		*num = atoi(&c) + (*num) * 10;
+		*num = atoi(&c) + (*num) * BASE;
 		c = fgetc(fp);
 	}
 
@@ -53,18 +52,18 @@ char* read_forest_from_file(FILE* fp, int side_len)
 	char* init_forest = forest; 
 
 	if (forest == NULL)
-		print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
+		print_error_and_exit(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
 
 	char forest_char = fgetc(fp); 
 
-	while (forest_char != EOF) {
-
+	while (forest_char != EOF)
+	{
 		if (forest_char != ',' && forest_char != '\n')
 		{
 			*forest = forest_char;
 			forest++;
 		}
-				
+
 		forest_char = fgetc(fp);
 	} 
 	*forest = '\0';
