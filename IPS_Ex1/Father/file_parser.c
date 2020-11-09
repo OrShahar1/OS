@@ -8,45 +8,62 @@
 #include <stdlib.h> 
 #include "common.h"
 
+/// the base to be used for converting char to int 
 static const int BASE = 10;
-FILE* read_num_from_file(FILE* fp, int* num);
-char* read_forest_from_file(FILE* fp, int side_len);
 
+FILE* read_num_from_file(FILE* f_input, int* num);
+char* read_forest_from_file(FILE* f_input, int side_len);
 
-char* parser(const char* forest_file, int *p_side_len, int *p_generations_num)
+/// parser
+/// inputs:  f_input - pointer to input file 
+///          p_side_len - pointer to number side_len
+///          p_generations_num - pointer to number generations_num
+/// outputs: char* - the initial forest
+///          will updated p_side_len & p_generations_num with the correct numbers
+///          extract values from first two lines in input.txt
+/// summary: parses all data from input file 
+/// 
+char* parser(FILE* f_input, int *p_side_len, int *p_generations_num)
 {
-	FILE* fp = fopen(forest_file, "r");
 	char* init_forest; 
 
-	if (fp == NULL)
-		print_error_and_exit(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__);
-
-	fp = read_num_from_file(fp, p_side_len);
+	f_input = read_num_from_file(f_input, p_side_len);
 	
-	fp = read_num_from_file(fp, p_generations_num);
+	f_input = read_num_from_file(f_input, p_generations_num);
 
-	init_forest = read_forest_from_file(fp, *p_side_len);
+	init_forest = read_forest_from_file(f_input, *p_side_len);
 	
-	fclose(fp);
-
 	return init_forest;
 }
 
-FILE* read_num_from_file(FILE* fp, int* num)
+/// read_num_from_file
+/// inputs:  f_input - pointer to file input.txt
+///          num - pointer to number 
+/// outputs: returns f_input
+/// summary: sets num with the number that located in line 
+/// 
+FILE* read_num_from_file(FILE* f_input, int* num)
 {
 	*num = 0;
-	char c = fgetc(fp);
+	char c = fgetc(f_input);
 
 	while (c != '\n' && c != EOF)
 	{
 		*num = atoi(&c) + (*num) * BASE;
-		c = fgetc(fp);
+		c = fgetc(f_input);
 	}
 
-	return fp;
+	return f_input;
 }
 
-char* read_forest_from_file(FILE* fp, int side_len)
+/// read_forest_from_file
+/// inputs:  f_input - pointer to file input.txt
+///			 side_len - side length of the forest    
+/// outputs: char* - the initial forset  
+/// summary: read the initial forest from input file and return
+///          the initial forest 
+/// 
+char* read_forest_from_file(FILE* f_input, int side_len)
 {
 	char* forest = (char*)malloc(side_len * side_len + 1);
 	char* init_forest = forest; 
@@ -54,7 +71,7 @@ char* read_forest_from_file(FILE* fp, int side_len)
 	if (forest == NULL)
 		print_error_and_exit(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
 
-	char forest_char = fgetc(fp); 
+	char forest_char = fgetc(f_input);
 
 	while (forest_char != EOF)
 	{
@@ -64,7 +81,7 @@ char* read_forest_from_file(FILE* fp, int side_len)
 			forest++;
 		}
 
-		forest_char = fgetc(fp);
+		forest_char = fgetc(f_input);
 	} 
 	*forest = '\0';
 	

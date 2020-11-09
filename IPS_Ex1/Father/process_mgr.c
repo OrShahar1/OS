@@ -3,7 +3,7 @@
 //	michaelz  ( zhitomirsky1@mail.tau.ac.il )
 
 #define _CRT_SECURE_NO_WARNINGS 
-#define TIMEOUT_IN_MILLISECONDS 1000
+#define TIMEOUT_IN_MILLISECONDS 5000
 #define BRUTAL_TERMINATION_CODE -1
 
 #include <stdio.h>
@@ -17,6 +17,12 @@ void timeout_handle(int waitcode, HANDLE hprocess);
 char* get_command_with_args(const char* process_path, const char* process_args);
 
 
+/// process_handler
+/// inputs:	 process_path - the path to the .exe for the process
+///		     process_args - string which contains the arguments to the process
+/// outputs: exitcode of the process
+/// summary: creates process according to inputs, waits for its termination and returns
+///			 the exitcode 
 int process_handler(const char* process_path, const char* process_args)
 {
 	PROCESS_INFORMATION procinfo;
@@ -42,12 +48,19 @@ int process_handler(const char* process_path, const char* process_args)
 	CloseHandle(procinfo.hProcess); 
 	CloseHandle(procinfo.hThread); 
 	
-	return exitcode;
+	return exitcode; 
 }
 
+/// get_command_with_args
+/// inputs:	 process_path - the path to the .exe for the process
+///		     process_args - string which contains the arguments to the process
+/// outputs: pointer to concatenation of process_path and process_args 
+/// summary: concatenates the input strings and returns pointer
 char* get_command_with_args(const char* process_path, const char* process_args)
 {
-	TCHAR* command =(TCHAR*)malloc(strlen(process_path) + strlen(process_args) + 1);
+	// command length should be "process_path" length + "process args" length +
+	//							+ 1 for ' ' and 1 for '\0'
+	TCHAR* command = (TCHAR*)malloc(strlen(process_path) + strlen(process_args) + 2);
 
 	if (command == NULL)
 		print_error_and_exit(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
@@ -59,6 +72,11 @@ char* get_command_with_args(const char* process_path, const char* process_args)
 	return command; 
 }
 
+/// create_process
+/// inputs:	 CommandLine - string containing path to .exe file and its args 
+///		     ProcessInfoPtr - pointer to process information
+/// outputs: return value of CreateProcess
+/// summary: creates process and returns true if process created successfully, else false
 bool create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr)
 {
 	STARTUPINFO	startinfo = { sizeof(STARTUPINFO), NULL, 0 }; 
@@ -79,6 +97,11 @@ bool create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr)
 	return ret_val;
 }
 
+/// timeout_handle
+/// inputs:	 waitcode - the waitcode as returned from WaitForSingleObject 
+///		     hprocess - the handle to the process
+/// outputs:  -
+/// summary: terminates process if there was wait timeout
 void timeout_handle(int waitcode, HANDLE hprocess) 
 {
 	if (waitcode != WAIT_TIMEOUT)
