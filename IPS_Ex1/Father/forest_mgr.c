@@ -8,7 +8,7 @@
 #include <stdlib.h> 
 #include "common.h"
 #include "forest_mgr.h" 
-#include "process_mgr.h"
+//#include "process_mgr.h"
 #include "file_parser.h"
 
 typedef enum generation_step { BURN, GROW, BURY } gen_step;
@@ -33,6 +33,9 @@ int count_nearby_trees(char* forest, int side_len, int row, int col);
 char* get_forest_char_pointer(char* forest, int side_len, int row, int col);
 void check_and_set_forest_char(char* forest, char* new_forest, int side_len, int row, int col, char check_char, char set_char);
 
+//----------
+int counter_burned_trees(const char* forest); 
+//----------
 
 void run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 {
@@ -43,7 +46,9 @@ void run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 
 	for (i = 0; i < gen_num; i++)
 	{
-		burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest);
+		//burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest); 
+
+		burned_trees_num = counter_burned_trees(forest);
 
 		if (burned_trees_num < 0)
 			print_error_and_exit(MSG_ERR_INVALID_EXITCODE, __FILE__, __LINE__, __func__);
@@ -158,7 +163,7 @@ int count_nearby_trees(char* forest, int side_len, int row, int col)
 		row_offset = ALL_NEIGHBORS_OFFSET[i][0];
 		col_offset = ALL_NEIGHBORS_OFFSET[i][1];
 
-		p_cell = get_forest_char_pointer(forest, side_len, row + row_offset , col + col_offset );
+		p_cell = get_forest_char_pointer(forest, side_len, row + row_offset , col + col_offset);
 
 		if (p_cell == NULL)
 			continue;
@@ -189,3 +194,21 @@ void check_and_set_forest_char(char* forest, char* new_forest, int side_len, int
 
 }
 
+//---------------------------------------------------
+int counter_burned_trees(const char* forest)
+{
+
+	int burned_trees_counter = 0;
+
+
+	while (*forest != '\0')
+	{
+		if (*forest == 'F')
+			burned_trees_counter++;
+
+		forest++;
+	}
+
+	return burned_trees_counter;
+
+}

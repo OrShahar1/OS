@@ -7,6 +7,6 @@ extern const char* MSG_ERR_MEM_ALLOC;
 extern const char* MSG_ERR_PROCESS_CREATION_FAILED;
 extern const char* MSG_ERR_INVALID_EXITCODE;
 
-void print_error_and_exit(const char* msg,  int file, int line, const char* func_name);
+void print_error_and_exit(const char* msg, const char* file, int line, const char* func_name);
 
 #endif
