@@ -69,7 +69,10 @@ char* read_forest_from_file(FILE* f_input, int side_len)
 	char* init_forest = forest; 
 
 	if (forest == NULL)
-		return (print_error_and_return_error_code(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__));
+	{
+		 print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
+		 return NULL_ERROR_CODE; 
+	}
 		
 	char forest_char = fgetc(f_input);
 

@@ -12,7 +12,6 @@
 void main(int argc, char** argv)
 {
 	int burned_trees_counter = 0;
-
 	char* forest = argv[1];
 
 	while (*forest != '\0') 

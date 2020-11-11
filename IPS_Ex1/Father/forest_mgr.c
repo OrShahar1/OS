@@ -61,7 +61,8 @@ char* run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 	if (new_forest == NULL)
 	{
 		free(forest);
-		return (print_error_and_return_error_code(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__));
+		print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__); 
+		return NULL_ERROR_CODE;
 	}
 	int burned_trees_num, i;
 
@@ -69,13 +70,13 @@ char* run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 
 	for (i = 0; i < gen_num; i++)
 	{
-		burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest); 
+		burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest, PROCESS_ERROR_CODE); 
 		
-		if (burned_trees_num == ERROR_CODE_PROCESS )
+		if (burned_trees_num == PROCESS_ERROR_CODE )
 		{
 			free(new_forest);
 			free(forest);
-			return (ERROR_CODE_NULL);
+			return NULL_ERROR_CODE;
 		}
 
 		fprintf(f_output, "%s - %d", forest, burned_trees_num);

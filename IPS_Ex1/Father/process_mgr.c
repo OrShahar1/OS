@@ -5,25 +5,27 @@
 #define _CRT_SECURE_NO_WARNINGS 
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <windows.h>
 #include "common.h"
 
 static const int TIMEOUT_IN_MILLISECONDS = 5000;
 
-bool create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr);
-void timeout_handle(int waitcode, HANDLE hprocess);
+BOOL create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr);
+BOOL waitcode_handle(int waitcode, HANDLE hprocess, int process_error_code);
 char* get_command_with_args(const char* process_path, const char* process_args);
+void terminate_process(HANDLE hprocess, int process_error_code); 
 
 
 /// process_handler
 /// inputs:	 process_path - the path to the .exe for the process
 ///		     process_args - string which contains the arguments to the process
+///			 process_error_code - the exitcode of the process in case of a failure
 /// outputs: exitcode of the process
 /// summary: creates process according to inputs, waits for its termination and returns
 ///			 the exitcode 
-int process_handler(const char* process_path, const char* process_args)
+/// 
+int process_handler(const char* process_path, const char* process_args, int process_error_code)
 {
 	PROCESS_INFORMATION procinfo;
 	DWORD				waitcode;
@@ -33,33 +35,39 @@ int process_handler(const char* process_path, const char* process_args)
 	TCHAR* command = get_command_with_args(process_path, process_args);
 	int get_exit_code_val = 0;
 
-	if (command == ERROR_CODE_NULL)
-		return ERROR_CODE_PROCESS;
+	if (command == NULL_ERROR_CODE)
+		return process_error_code;
 
 	retVal = create_process(command, &procinfo);
 
-	if (retVal == 0) 
+	if (retVal == FALSE)
 	{
 		free(command);
-		print_error_and_return_error_code(MSG_ERR_PROCESS_CREATION_FAILED, __FILE__, __LINE__, __func__);
-		return ERROR_CODE_PROCESS;
+		print_error(MSG_ERR_PROCESS_CREATION_FAILED, __FILE__, __LINE__, __func__);
+		return process_error_code;
 	}
 
 	waitcode = WaitForSingleObject(
 		procinfo.hProcess,
 		TIMEOUT_IN_MILLISECONDS);
 
-	timeout_handle(waitcode, procinfo.hProcess);
+	retVal = waitcode_handle(waitcode, procinfo.hProcess, process_error_code);
 
-	get_exit_code_val = GetExitCodeProcess(procinfo.hProcess, &exitcode);
+	if (retVal == FALSE)
+	{
+		print_error(MSG_ERR_PROCESS_WAIT_FAILED, __FILE__, __LINE__, __func__);
+		return process_error_code;
+	}
+	
+	retVal = GetExitCodeProcess(procinfo.hProcess, &exitcode);
 
 	CloseHandle(procinfo.hProcess); 
 	CloseHandle(procinfo.hThread); 
-
-	if (get_exit_code_val == 0)
+	
+	if (retVal == FALSE)
 	{
-		print_error_and_return_error_code(MSG_ERR_GET_EXIT_CODE, __FILE__, __LINE__, __func__);
-		return ERROR_CODE_PROCESS;
+		print_error(MSG_ERR_GET_EXIT_CODE, __FILE__, __LINE__, __func__);
+		return process_error_code;
 	}
 
 	return exitcode; 
@@ -74,10 +82,10 @@ char* get_command_with_args(const char* process_path, const char* process_args)
 {
 	// command length should be "process_path" length + "process args" length +
 	//							+ 1 for ' ' and 1 for '\0'
-	TCHAR* command = (TCHAR*)malloc(strlen(process_path) + strlen(process_args) + 2);
+	TCHAR* command = (TCHAR*)malloc((strlen(process_path) + strlen(process_args) + 2) * sizeof(TCHAR));
 
-	if (command == NULL) 
-		return(print_error_and_return_error_code(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__));
+	if (command == NULL)
+		return NULL_ERROR_CODE; 
 
 	strcpy(command, process_path);
 	strcat(command, " ");
@@ -91,11 +99,12 @@ char* get_command_with_args(const char* process_path, const char* process_args)
 ///		     ProcessInfoPtr - pointer to process information
 /// outputs: return value of CreateProcess
 /// summary: creates process and returns true if process created successfully, else false
-bool create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr)
+/// 
+BOOL create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr)
 {
 	STARTUPINFO	startinfo = { sizeof(STARTUPINFO), NULL, 0 }; 
 
-	bool ret_val= CreateProcess(
+	BOOL ret_val= CreateProcess(
 		NULL,					/*  No module name (use command line). */
 		CommandLine,			/*  Command line. */
 		NULL,					/*  Process handle not inheritable. */
@@ -111,24 +120,39 @@ bool create_process(LPTSTR CommandLine, PROCESS_INFORMATION *ProcessInfoPtr)
 	return ret_val;
 }
 
-/// timeout_handle
+/// waitcode_handle
 /// inputs:	 waitcode - the waitcode as returned from WaitForSingleObject 
 ///		     hprocess - the handle to the process
+///			 process_error_code - the exitcode of the process in case of a failure 
 /// outputs:  -
 /// summary: terminates process if there was wait timeout
-void timeout_handle(int waitcode, HANDLE hprocess) 
+/// 
+BOOL waitcode_handle(int waitcode, HANDLE hprocess, int process_error_code)
 {
-	if (waitcode != WAIT_TIMEOUT)
-		return;
-	
-	printf("Process wait timeout - terminating process.\n");
+	BOOL is_normal_waitcode = TRUE;
 
-	TerminateProcess(hprocess, ERROR_CODE_PROCESS);
-	Sleep(10);
-	
+	switch (waitcode) 
+	{
+	case WAIT_TIMEOUT:
+		terminate_process(hprocess, process_error_code);
+		is_normal_waitcode = FALSE;
+		break; 
+
+	case WAIT_FAILED: 
+		
+		is_normal_waitcode = FALSE;
+		break;
+	}
+
+	return is_normal_waitcode;
 }
 
-
+void terminate_process(HANDLE hprocess, int process_error_code)
+{
+	printf("Process wait timeout - terminating process.\n");
+	TerminateProcess(hprocess, process_error_code);
+	Sleep(10);
+}
 
 
 

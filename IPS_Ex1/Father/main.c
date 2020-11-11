@@ -37,11 +37,11 @@ int main(int argc, char** argv)
 	// read file and return initial forest
 	forest = parser(f_input, &side_len, &gen_num);
 
-	if (forest != ERROR_CODE_NULL)
-		// advance forest to finial state
+	if (forest != NULL_ERROR_CODE)
+		// advance forest to final state
 		forest = run_iterations(forest, side_len, gen_num, f_output);
 
-	if (forest != ERROR_CODE_NULL)
+	if (forest != NULL_ERROR_CODE)
 		free(forest);
 
 	fclose(f_input);
@@ -58,7 +58,8 @@ int error_handler(const char* msg, const char* file, int line, const char* func_
 	if (f_output != NULL)
 		fclose(f_output);
 
-	print_error_and_return_error_code(msg, file, line, func_name);
+	print_error(msg, file, line, func_name);
+
 	return -1;
 }
 
