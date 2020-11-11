@@ -1,0 +1,14 @@
+12
+41
+T,G,G,G,T,F,F,G,F,F,G,F
+G,F,G,G,F,T,T,F,G,G,G,T
+F,T,T,F,G,T,T,T,T,G,G,F
+T,T,G,T,T,G,F,T,G,F,T,G
+F,G,G,F,F,T,F,T,G,F,T,F
+T,G,G,T,G,G,G,T,F,G,F,F
+F,T,T,F,T,F,G,F,G,G,G,G
+F,G,T,F,T,F,G,F,T,T,F,T
+T,G,T,T,F,T,F,F,T,T,F,T
+F,T,F,T,G,F,F,G,G,F,F,F
+F,G,G,F,T,T,G,G,G,F,T,F
+F,T,F,G,G,G,F,T,T,T,T,T

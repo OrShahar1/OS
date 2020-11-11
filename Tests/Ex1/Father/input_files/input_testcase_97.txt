@@ -1,0 +1,10 @@
+8
+37
+T,G,T,T,T,T,G,T
+G,G,F,T,T,F,G,T
+T,F,G,T,T,G,T,T
+T,F,G,T,F,G,G,F
+F,F,G,G,F,G,F,G
+T,T,F,F,F,T,G,F
+G,F,G,G,T,T,F,F
+T,T,G,T,G,F,G,G

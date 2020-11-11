@@ -58,6 +58,11 @@ void check_and_set_forest_char(char* forest, char* new_forest, int side_len, int
 char* run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 {
 	char* new_forest = (char*)malloc(side_len * side_len + 1);
+	if (new_forest == NULL)
+	{
+		free(forest);
+		return (print_error_and_return_error_code(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__));
+	}
 	int burned_trees_num, i;
 
 	strcpy(new_forest, forest);
@@ -66,8 +71,12 @@ char* run_iterations(char* forest, int side_len, int gen_num, FILE* f_output)
 	{
 		burned_trees_num = process_handler(BURNED_TREES_COUNTER_PATH, forest); 
 		
-		if (burned_trees_num < 0)
-			print_error_and_exit(MSG_ERR_INVALID_EXITCODE, __FILE__, __LINE__, __func__);
+		if (burned_trees_num == ERROR_CODE_PROCESS )
+		{
+			free(new_forest);
+			free(forest);
+			return (ERROR_CODE_NULL);
+		}
 
 		fprintf(f_output, "%s - %d", forest, burned_trees_num);
 

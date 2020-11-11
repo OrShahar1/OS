@@ -1,7 +1,9 @@
 ﻿  common.c
+C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex1\Father\common.c(32,26): warning C4090: 'return': different 'const' qualifiers
   file_parser.c
   forest_mgr.c
+C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex1\Father\forest_mgr.c(78,28): warning C4090: 'return': different 'const' qualifiers
   main.c
   process_mgr.c
   Generating Code...
-  Father.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Debug\Father.exe
+  Father.vcxproj -> C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex1\Debug\Father.exe

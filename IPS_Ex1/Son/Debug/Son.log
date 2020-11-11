@@ -1,4 +1,2 @@
-﻿  main.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Son\main.c(22,6): warning C4013: 'exit' undefined; assuming extern returning int
-  LINK : E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Debug\Son.exe not found or not built by the last incremental link; performing full link
-  Son.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex1\Debug\Son.exe
+﻿  LINK : C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex1\Debug\Son.exe not found or not built by the last incremental link; performing full link
+  Son.vcxproj -> C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex1\Debug\Son.exe

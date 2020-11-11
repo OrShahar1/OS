@@ -1,6 +1,6 @@
 //authors:
 //	or shahar ( orshahar1@mail.tau.ac.il )
-//	michaelz  ( zhitomirsky1@mail.tau.ac.il )
+//	michaelz  ( zhitomirsky1@mail.tau.ac.il ) 
 
 #define _CRT_SECURE_NO_WARNINGS 
 
@@ -69,8 +69,8 @@ char* read_forest_from_file(FILE* f_input, int side_len)
 	char* init_forest = forest; 
 
 	if (forest == NULL)
-		print_error_and_exit(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
-
+		return (print_error_and_return_error_code(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__));
+		
 	char forest_char = fgetc(f_input);
 
 	while (forest_char != EOF)

@@ -10,6 +10,7 @@
 #include "forest_mgr.h"
 #include "file_parser.h"
 
+int error_handler(const char* msg, const char* file, int line, const char* func_name ,FILE* f_input, FILE* f_output);
 
 /// main
 /// inputs:  argc - number of args 
@@ -22,21 +23,26 @@
 int main(int argc, char** argv) 
 {
 	if (argc != 2)
-		print_error_and_exit(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
+		return error_handler (MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__, NULL, NULL);
 
 	FILE* f_input = fopen(argv[1], "r");
 	FILE* f_output = fopen("output.txt","w");
 
 	if (f_input == NULL || f_output == NULL)
-		print_error_and_exit(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__);
-
+		return error_handler(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__, f_input , f_output);
+	
 	int side_len, gen_num;
 	char* forest = NULL;
 	
+	// read file and return initial forest
 	forest = parser(f_input, &side_len, &gen_num);
-	forest = run_iterations(forest, side_len, gen_num, f_output);
 
-	free(forest);
+	if (forest != ERROR_CODE_NULL)
+		// advance forest to finial state
+		forest = run_iterations(forest, side_len, gen_num, f_output);
+
+	if (forest != ERROR_CODE_NULL)
+		free(forest);
 
 	fclose(f_input);
 	fclose(f_output); 
@@ -44,15 +50,17 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+int error_handler(const char* msg, const char* file, int line, const char* func_name, FILE* f_input, FILE* f_output)
+{
+	if (f_input != NULL)
+		fclose(f_input);
 
+	if (f_output != NULL)
+		fclose(f_output);
 
-
-
-
-
-
-
-
+	print_error_and_return_error_code(msg, file, line, func_name);
+	return -1;
+}
 
 
 

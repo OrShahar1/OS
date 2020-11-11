@@ -1,0 +1,12 @@
+10
+29
+T,G,T,G,T,G,G,F,F,G
+G,T,F,F,T,G,F,G,G,G
+F,F,F,G,G,F,G,G,G,F
+F,G,G,F,G,T,F,G,T,F
+T,F,T,G,G,G,T,G,F,G
+G,F,T,G,F,T,F,G,T,G
+T,T,G,T,T,T,F,T,F,G
+T,T,G,G,T,G,T,F,T,T
+F,F,G,G,F,T,F,T,T,T
+F,F,G,G,F,G,F,T,G,T
