@@ -1,42 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "common.h"
+#include "caesar_encryption_decryption.h"
 
 
-// include headers -----------------------------
+typedef enum _character_type_ { 
+	UPPERCASE_INTRO_CHAR = 'A', 
+	LOWERCASE_INTRO_CHAR = 'a', 
+	DIGIT_INTRO_CHAR = '0' 
+} char_type;
 
+typedef enum _mode_type { 
+	ENCRYPTION = 'e', 
+	DECRYPTION = 'd' 
+} mode_type;
 
-// enum 
+typedef enum _modulo_type { 
+	LETTER = 26,
+	DIGIT = 10
+} modulo_type;
 
-typedef enum _character_type {UPPERCASE , LOWERCASE , DIGIT } char_type;
+char encrypt_or_decrypt(mode_type encrypt_decrypt, char_type type_intro_char, char character, int key);
+bool is_not_char_to_ignore(char c);
+char_type classification_char(char input_char);
 
-
-// declarations 
-char encrypt_or_decrypt(bool to_decrypt, char character, int key, char_type type);
-char_type get_char_type(char character);
-
-
-
-
-char encrypt_or_decrypt(bool to_decrypt, char character, int key, char_type type) 
+void start_exe(FILE* f_input, FILE* f_output, int key, int flag_encrypt_or_decrypt, int number_of_thread)
 {
-	int decrypt_mul = 1;
-	int modulo_num;
-	char result_char, ref_char;
-
-	switch (type)
+	char c;
+	do
 	{
-	case UPPERCASE:
+		c = fgetc(f_input);
+		if (c == '\n')
+			fputc(c, f_output);
+			//printf("%c", c);
 
-	case LOWERCASE:
+		if (is_not_char_to_ignore(c))
+			fputc(encrypt_or_decrypt(flag_encrypt_or_decrypt, classification_char(c), c, key), f_output);
+			//printf("%c", encrypt_or_decrypt(flag_encrypt_or_decrypt, classification_char(c), c, key));
+		else
+			fputc(c, f_output);
+			//printf("%c", c);
 
-	case DIGIT:
+	} while (c != EOF);
 
-	}
+}
 
-	if (!to_decrypt)
-		decrypt_mul = -1;
+bool is_not_char_to_ignore(char input_char)
+{
+	if (input_char >= 'A' && input_char <= 'Z')
+		return true;
 
-	result_char = ref_char + (character - ref_char - decrypt_mul * key) % modulo_num;
+	if (input_char >= 'a' && input_char <= 'z')
+		return true;
 
+	if (input_char >= '0' && input_char <= '9')
+		return true;
 
-	return result_char;
+	return false;
+}
+
+char encrypt_or_decrypt(mode_type encrypt_decrypt, char_type type_intro_char, char character, int key )
+{
+	modulo_type modulo_num = LETTER;
+
+	if (!encrypt_decrypt)
+		encrypt_decrypt = -1;
+
+	if (type_intro_char == DIGIT_INTRO_CHAR)
+		modulo_num = DIGIT;
+
+	return ( type_intro_char + (character - type_intro_char -  key) % modulo_num );
+
+}
+
+char_type classification_char(char input_char)
+{
+	if (input_char >= 'A' && input_char <= 'Z')
+		return UPPERCASE_INTRO_CHAR;
+
+	if (input_char >= 'a' && input_char <= 'z')
+		return LOWERCASE_INTRO_CHAR;
+
+	return DIGIT_INTRO_CHAR;
 
 }
