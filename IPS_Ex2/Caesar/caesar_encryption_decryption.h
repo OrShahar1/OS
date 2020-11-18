@@ -1,8 +1,10 @@
-#ifndef ENCRYPTION_DECRYPTION_H
-#define ENCRYPTION_DECRYPTION_H
+#ifndef CAESAR_ENCRYPTION_DECRYPTION_H
+#define CAESAR_ENCRYPTION_DECRYPTION_H
+
+#include <stdbool.h>
+
+void cipher_exe(FILE* f_input, FILE* f_output, bool to_decrypt, int key, int number_of_thread);
+char* line_cipher_execute(char* line, bool to_decrypt, int key);
 
 
-void start_exe(FILE* f_input, FILE* f_output, int key, int flag_encrypt_or_decrypt, int number_of_thread);
-
-
-#endif
+#endif // CAESAR_ENCRYPTION_DECRYPTION_H

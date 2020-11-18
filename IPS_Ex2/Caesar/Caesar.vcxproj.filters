@@ -27,6 +27,9 @@
     <ClCompile Include="tests.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="thread_mgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_mgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
