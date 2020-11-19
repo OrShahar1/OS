@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "common.h"
+#include "error_mgr.h"
 #include "caesar_encryption_decryption.h"
 #include "tests.h"
 #include "thread_mgr.h"

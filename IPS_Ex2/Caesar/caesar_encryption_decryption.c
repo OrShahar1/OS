@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "common.h"
+#include "error_mgr.h"
 #include "caesar_encryption_decryption.h"
 
 // enums  ---------------------------------------------------------------------
@@ -32,7 +32,7 @@ static const cipher_info DIGIT_CIPHER     = { '0', 10 };
 static const int DECRYPTION_MUL = -1;
 static const int ENCRYPTION_MUL = 1;
 
-// functions declarations  ----------------------------------------------
+// functions declarations  ----------------------------------------------------
 
 char char_cipher_execute(bool to_decrypt, char_type type_intro_char, char character, int key);
 cipher_info get_cipher_info(char_type input_char_type);
