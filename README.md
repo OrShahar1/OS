@@ -1,1 +1,1 @@
-# OS
+# IPS Course Projects
