@@ -8,56 +8,117 @@
 #include "tests.h"
 #include "thread_mgr.h"
 
+// enums  ----------------------------------------------
+typedef enum _arg_index{
+	INPUT_PATH_INDEX = 1,
+	KEY_INDEX,
+	NUMBER_OF_THREADS_INDEX,
+	ENCRYPT_DECRYPT_FLAG_INDEX,
+	ARGS_NUM
+} arg_index; 
 
 // consts  ----------------------------------------------
 
 # define ERROR_CODE -1
+//# define OUTPUT_FILE_NAME "decrypted.txt"
+static const char* OUTPUT_FILE_NAME = "decrypted.txt";
+static const char* DECRYPTION_FLAG = "-d"; 
+static const char* DIR_SEPERATOR_STR = "\\";
+
+static const char DIR_SEPERATOR_CHAR = '\\';
 
 // functions decleretions  ----------------------------------------------
 
 int error_handler(const char* msg, const char* file, int line, const char* func_name, FILE* f_input);
-void parser_data_from_cmd(int* key, int* number_of_thread, char* flag_encrypt_or_decrypt, char* cmd_data[]);
+void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool* to_decrypt); 
 
 
-int main(int argc, char* argv[]) 
+error_code_t main(int argc, char* argv[])
 {
-	
-	if (argc != 5)
-		return error_handler(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__, NULL);
-	
-	FILE* f_input ;
-	FILE* f_output;
+	error_code_t status = SUCCESS_CODE;
+	error_code_t return_code;
 
-	fopen_s(&f_input , argv[1], "r");
-	if (NULL == f_input)
-		return error_handler(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__, f_input);
-
-	fopen_s(&f_output, "decrypted.txt" , "w");
-	if (NULL == f_output)
-		return error_handler(MSG_ERR_CANNOT_OPEN_FILE, __FILE__, __LINE__, __func__, f_output);
+	char *input_path = NULL;
+	char *output_path = NULL;
 
 	int key, number_of_thread;
-	bool to_decrypt; 
+	bool to_decrypt;
 
-	parser_data_from_cmd(&key, &number_of_thread, &to_decrypt, argv);
+	if (argc != ARGS_NUM)
+	{
+		print_error(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
+		status = ARGS_NUM_ERROR;
+		goto exit_main;
+	}
+	
+	return_code = set_file_paths(&input_path, &output_path, argv[INPUT_PATH_INDEX]);
 
-	cipher_exe(f_input, f_output, to_decrypt,key, key, number_of_thread);
+	if (return_code != SUCCESS_CODE)
+	{
+		status = return_code; 
+		goto exit_main;
+	}
+	
+	parse_data_from_cmd(argv, &key, &number_of_thread, &to_decrypt);
 
-	//printf("%s , %d , %d, %c ", argv[1], key, number_of_thread, flag_encrypt_or_decrypt);
+	return_code = cipher_thread_manager(number_of_thread, to_decrypt, key, input_path, output_path);
+	/*
+	printf("%s\n %s \n", input_path, output_path);
+	printf("%d , %d, %d ", key, number_of_thread, to_decrypt);
+	*/
 	// read and decrypt/ / encrypt  with flag ( -d -e ) 
-	fclose(f_output);
-	fclose(f_input);
-	return 0;
+
+exit_main:
+	if (input_path != NULL)
+		free(input_path);
+
+	if (output_path != NULL)
+		free(output_path);
+
+	return status;
 }
 
-void parser_data_from_cmd(int* key, int* number_of_thread, bool* to_decrypt, char* cmd_data[])
+void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool* to_decrypt)
 {
-	*key = atoi(cmd_data[2]);
-	*number_of_thread = atoi(cmd_data[3]);
-	*to_decrypt = (cmd_data[4][1] == 'd')? true : false;
+	*key = atoi(cmd_data[KEY_INDEX]);
+	*number_of_thread = atoi(cmd_data[NUMBER_OF_THREADS_INDEX]);
+	*to_decrypt = (strcmp(cmd_data[ENCRYPT_DECRYPT_FLAG_INDEX], DECRYPTION_FLAG) == 0) ? true : false;
 }
 
+error_code_t set_file_paths(char** input_path, char** output_path, char* input_path_main_arg)
+{
+	int input_path_len, output_path_len_max;
 
+	input_path_len = strlen(input_path_main_arg) + 1;
+	output_path_len_max = input_path_len + strlen(OUTPUT_FILE_NAME) + 1;
+
+	// Note that input_path_len + strlen(OUTPUT_FILE_NAME) is bigger than the actual output path length
+	// this is done for implemetation simplicity 
+
+	(*input_path) = (char*)malloc(sizeof(char) * input_path_len);
+	(*output_path) = (char*)malloc(sizeof(char) * output_path_len_max);
+
+	if (*input_path == NULL || *output_path == NULL)
+	{
+		print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
+		return MEM_ALLOC_ERROR;
+	}
+
+	strcpy_s(*input_path, input_path_len, input_path_main_arg);
+	strcpy_s(*output_path, output_path_len_max, input_path_main_arg);
+
+	// get pointer to the last occurance of '\', this is where the directory name ends
+	char* dir_path_end = strrchr(*output_path, DIR_SEPERATOR_CHAR);
+	*dir_path_end = '\0';
+
+	// concatenate the '\' and the output file name 
+	strcat_s(*output_path, output_path_len_max, DIR_SEPERATOR_STR);
+	strcat_s(*output_path, output_path_len_max, OUTPUT_FILE_NAME);
+
+	return SUCCESS_CODE;
+}
+
+/*
 int error_handler(const char* msg, const char* file, int line, const char* func_name, FILE* f_input)
 {
 	if (f_input != NULL)
@@ -67,3 +128,4 @@ int error_handler(const char* msg, const char* file, int line, const char* func_
 
 	return ERROR_CODE;
 }
+*/

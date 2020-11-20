@@ -13,7 +13,10 @@ const char* MSG_ERR_PROCESS_CREATION_FAILED = "process creation failed.";
 const char* MSG_ERR_INVALID_EXITCODE = "invalid exit code number.";
 const char* MSG_ERR_GET_EXIT_CODE = "GetExitCodeProcess failed.";
 const char* MSG_ERR_PROCESS_WAIT_FAILED = "process wait failed.";
-
+const char* MSG_ERR_HANDLE_VALUE = "handle failed.";
+const char* MSG_ERR_CREATE_THREAD = "hadle failed.";
+const char* MSG_ERR_SET_FILE_POINTER_FAILED = "SetFilePointer failed";
+const char* MSG_ERR_THREADS_INPUTS_INITALIZATION_FAILED = "Threads inputs initalization failed";
 
 /// error code for indicating whether an error has occured  errors
 const int RETURN_CODE_ERROR = -1;
@@ -21,7 +24,6 @@ const int RETURN_CODE_NORMAL = 0;
 
 /// error code for generic pointer problems
 const void* NULL_ERROR_CODE = NULL;
-
 
 
 /// print_error

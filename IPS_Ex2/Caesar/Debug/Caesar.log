@@ -1,3 +1,11 @@
-﻿  main.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\main.c(55,55): warning C4020: 'cipher_exe': too many actual parameters
+﻿  thread_mgr.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(134,28): warning C4013: 'cipher_execute' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(188,48): warning C4013: 'initialize_thread_input_fields' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(275,85): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(275,81): warning C4024: 'CreateFileA': different types for formal and actual parameter 3
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(292,37): warning C4013: 'line_cipher_execute' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(292,12): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'int'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(282,10): warning C4101: 'input_char': unreferenced local variable
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(282,22): warning C4101: 'new_char': unreferenced local variable
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(138): warning C4715: 'cipher_thread': not all control paths return a value
   Caesar.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Debug\Caesar.exe

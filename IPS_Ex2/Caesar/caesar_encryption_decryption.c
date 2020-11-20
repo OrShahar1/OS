@@ -39,27 +39,7 @@ cipher_info get_cipher_info(char_type input_char_type);
 char_type classify_char(char input_char);
 bool is_char_in_range(char my_char, char range_start, char range_end);
 
-void cipher_exe(FILE* f_input, FILE* f_output,  bool to_decrypt, int key, int number_of_thread)
-{
-	char input_char, new_char; 
-	char_type input_char_type;
-	do
-	{
-		input_char = fgetc(f_input);
 
-		if (classify_char(input_char) != CHAR_TO_IGNORE)
-		{
-			input_char_type = classify_char(input_char);
-			new_char = char_cipher_execute(to_decrypt, input_char_type, input_char, key);
-			fputc(new_char, f_output);
-		}
-		else
-			fputc(input_char, f_output);
-
-
-	} while (input_char != EOF);
-
-}
 
 char* line_cipher_execute(char* line, bool to_decrypt, int key)
 {
