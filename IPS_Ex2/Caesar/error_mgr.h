@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef ERROR_MGR_H
+#define ERROR_MGR_H
 
 typedef enum { 
     SUCCESS_CODE, 
@@ -8,6 +8,9 @@ typedef enum {
     FILE_OPEN_FAILED, 
     FILE_SEEK_FAILED,
     FILE_READING_FAILED,
+    SET_FILE_POINTER_FAILED,
+    THREAD_CREATION_FAILED,
+    THREADS_WAIT_TIMEOUT,
     FTELL_FAILED,
     MUTEX_OPEN_FAILED,
     MUTEX_CREATE_FAILED,
@@ -30,7 +33,20 @@ extern const char* MSG_ERR_CREATE_MUTEX;
 extern const char* MSG_ERR_CREATE_THREAD;
 extern const char* MSG_ERR_HANDLE_VALUE;
 extern const char* MSG_ERR_SET_FILE_POINTER_FAILED;
-extern const char* MSG_ERR_THREADS_INPUTS_INITALIZATION_FAILED;
+extern const char* MSG_ERR_THREADS_INPUTS_INITALIZATION_FAILED; 
+extern const char* MSG_ERR_THREADS_WAIT_TIMEOUT;
+
+
 void print_error(const char* msg, const char* file, int line, const char* func_name);
 
-#endif
+/*
+
+
+error_code_t print_error_and_return_program_status(const char* msg, const char* file, int line, const char* func_name, error_code_t status);
+
+
+*/
+
+
+
+#endif // ERROR_MGR_H

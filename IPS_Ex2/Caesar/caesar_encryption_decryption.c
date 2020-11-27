@@ -38,7 +38,7 @@ char char_cipher_execute(bool to_decrypt, char_type type_intro_char, char charac
 cipher_info get_cipher_info(char_type input_char_type);
 char_type classify_char(char input_char);
 bool is_char_in_range(char my_char, char range_start, char range_end);
-
+int calc_modulo(int divident, int divisor); 
 
 
 char* line_cipher_execute(char* line, bool to_decrypt, int key)
@@ -72,14 +72,21 @@ char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_
 	
 	cipher_info current_cipher = get_cipher_info(input_char_type);
 
-	new_char = current_cipher.ref_char + (input_char - current_cipher.ref_char + cipher_mul * key) % current_cipher.modulo_num;
+	new_char = current_cipher.ref_char 
+		+ calc_modulo((input_char - current_cipher.ref_char + cipher_mul * key), current_cipher.modulo_num);
 
 	//printf("%d %c --> %c\n", input_char_type, input_char, new_char);
 
 	return new_char;
 
 }
+int calc_modulo(int divident, int divisor) 
+{
+	while (divident < 0)
+		divident += divisor;
+	return (divident % divisor); 
 
+}
 cipher_info get_cipher_info(char_type input_char_type)
 {
 	switch (input_char_type) {

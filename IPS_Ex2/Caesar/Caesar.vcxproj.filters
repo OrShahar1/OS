@@ -30,6 +30,9 @@
     <ClCompile Include="error_mgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cipher_thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caesar_encryption_decryption.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="error_mgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cipher_thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

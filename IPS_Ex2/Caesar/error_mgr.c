@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "error_mgr.h"
 
 /// error messages to be used for "print_error"
 const char* MSG_ERR_NUM_ARGS = "wrong amount of arguments (expected 4).";
@@ -17,10 +18,8 @@ const char* MSG_ERR_HANDLE_VALUE = "handle failed.";
 const char* MSG_ERR_CREATE_THREAD = "hadle failed.";
 const char* MSG_ERR_SET_FILE_POINTER_FAILED = "SetFilePointer failed";
 const char* MSG_ERR_THREADS_INPUTS_INITALIZATION_FAILED = "Threads inputs initalization failed";
+const char* MSG_ERR_THREADS_WAIT_TIMEOUT = " Timeout while waiting for threads to return"; 
 
-/// error code for indicating whether an error has occured  errors
-const int RETURN_CODE_ERROR = -1;
-const int RETURN_CODE_NORMAL = 0; 
 
 /// error code for generic pointer problems
 const void* NULL_ERROR_CODE = NULL;
@@ -36,3 +35,13 @@ void print_error(const char* msg, const char* file, int line, const char* func_n
     printf("File: %s\n", file);
     printf("Line: %d, Function: %s\n", line, func_name);
 }
+
+
+// should we keep this? 
+/*
+error_code_t print_error_and_return_program_status(const char* msg, const char* file, int line, const char* func_name, error_code_t status)
+{
+    print_error(msg, file, line, func_name);
+    return status; 
+}
+*/
