@@ -1,28 +1,3 @@
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-				     	TODO 
-
-1. add thread termination in case of an error (thread_mgr)
-
-2. get correct line blocks for each thread (thread_mgr)
-
-3. set correct file pointers in cipher thread according to (2) (cipher_thread)
-
-4. make sure that we free all resources and that we do it correctly 
-	(free thread handles correctly when not all threads were created)
-
-5. add semaphore: thread_mgr - release (threads_num)
-				  cipher_thread - waitForSemaphore() 
-
-6. add comments
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-
-
 // include headers --------------------------------------
 
 #include <stdio.h>
@@ -30,7 +5,6 @@
 #include <string.h>
 #include "error_mgr.h"
 #include "caesar_encryption_decryption.h"
-#include "tests.h"
 #include "thread_mgr.h"
 
 // enums  ----------------------------------------------
@@ -44,20 +18,19 @@ typedef enum _arg_index{
 
 // consts  ----------------------------------------------
 
-//# define OUTPUT_FILE_NAME "decrypted.txt"
 static const char* DECRYPTION_OUTPUT_FILE_NAME = "decrypted.txt";
 static const char* ENCRYPTION_OUTPUT_FILE_NAME = "encrypted.txt";
-
 static const char DIR_SEPERATOR_CHAR = '\\';
-
 static const char* DECRYPTION_FLAG = "-d";
+static const char* ENCRYPTION_FLAG = "-e";
 
-// functions decleretions  ----------------------------------------------
+// functions declarations  ----------------------------------------------
 
 void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool* to_decrypt);
 error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* input_path_main_arg, bool to_decrypt); 
 error_code_t check_args_num(int argc); 
 void free_main_resources(char* input_path, char* output_path);
+error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag);
 
 int main(int argc, char* argv[])
 {
@@ -66,7 +39,7 @@ int main(int argc, char* argv[])
 	char *input_path = NULL;
 	char *output_path = NULL;
 
-	int key, number_of_thread;
+	int key, number_of_threads;
 	bool to_decrypt;
 
 	// make sure that we got the anticipated number of arguments
@@ -78,7 +51,14 @@ int main(int argc, char* argv[])
 	
 	// parse command line argumets to get the encryption / decryption key,
 	// number of threads and whether we sould encrypt or decrypt the input file 
-	parse_data_from_cmd(argv, &key, &number_of_thread, &to_decrypt);
+	parse_data_from_cmd(argv, &key, &number_of_threads, &to_decrypt);
+
+	// check if input args  are valid: thread num > 0 and e/d flag is "-d"/"-e"
+	status = check_if_valid_args(number_of_threads, argv[ENCRYPT_DECRYPT_FLAG_INDEX]);
+
+	// in case of an error --> finish program
+	if (status != SUCCESS_CODE)
+		goto exit_main;
 
 	// get the file input and output path from argv[INPUT_PATH_INDEX]
 	status = set_file_paths(&input_path, &output_path, argv[INPUT_PATH_INDEX], to_decrypt);
@@ -87,21 +67,10 @@ int main(int argc, char* argv[])
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
-	status = cipher_thread_manager(number_of_thread, to_decrypt, key, input_path, output_path);
-
-	/*
-	//--------------------
-	printf("%s\n%s \n", input_path, output_path);
-
-	printf("%d , %d, %d ", key, number_of_thread, to_decrypt);
-	//--------------------
-	// read and decrypt/ / encrypt  with flag ( -d -e ) 
-	*/
-
+	status = cipher_thread_manager(number_of_threads, to_decrypt, key, input_path, output_path);
 
 exit_main:
 	free_main_resources(input_path, output_path);
-
 	return (int)status;
 }
 
@@ -169,6 +138,18 @@ error_code_t check_args_num(int argc)
 	return ARGS_NUM_ERROR;
 }
 
+error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag)
+{
+	if ((strcmp(encrypt_or_decrypt_flag, DECRYPTION_FLAG) != 0 && 
+		strcmp(encrypt_or_decrypt_flag, ENCRYPTION_FLAG) != 0) ||
+		number_of_threads <= 0)
+	{
+		return NOT_VALID_ARGS;
+		print_error(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
+	}
+	return SUCCESS_CODE;
+}
+
 void free_main_resources(char* input_path, char* output_path)
 {
 	if (input_path != NULL)
@@ -177,3 +158,5 @@ void free_main_resources(char* input_path, char* output_path)
 	if (output_path != NULL)
 		free(output_path);
 }
+
+

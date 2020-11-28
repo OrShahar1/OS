@@ -18,7 +18,7 @@ typedef struct {
     const char* input_path;
     const char* output_path;
     block_limits line_block_limits;
-    HANDLE start_semaphore_handle;
+    HANDLE * p_thread_start_semaphore;
 
     bool to_decrypt;
     int key;

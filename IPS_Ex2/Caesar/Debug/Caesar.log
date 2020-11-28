@@ -1,25 +1,5 @@
-﻿  caesar_encryption_decryption.c
-  cipher_thread.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(32,67): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(32,63): warning C4024: 'CreateFileA': different types for formal and actual parameter 3
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(63,82): warning C4028: formal parameter 3 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(63,98): warning C4028: formal parameter 4 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(83,37): warning C4013: 'line_cipher_execute' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(83,12): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'int'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(72,10): warning C4101: 'input_char': unreferenced local variable
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(72,22): warning C4101: 'new_char': unreferenced local variable
-  error_mgr.c
+﻿  error_mgr.c
   main.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\main.c(154,91): warning C4090: '=': different 'const' qualifiers
-  thread_mgr.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(127,72): warning C4090: 'function': different 'const' qualifiers
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(127,74): warning C4020: 'initialize_threads_block_limits': too many actual parameters
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(130,30): warning C4102: 'initialize_thread_inputs_exit': unreferenced label
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(146,94): warning C4028: formal parameter 2 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(147,1): warning C4029: declared formal parameter list different from definition
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(149,20): warning C4101: 'max_block_size': unreferenced local variable
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(149,9): warning C4101: 'lines_num': unreferenced local variable
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(149,36): warning C4101: 'min_block_size': unreferenced local variable
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\main.c(123,91): warning C4090: '=': different 'const' qualifiers
   Generating Code...
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\caesar_encryption_decryption.c(102): warning C4715: 'get_cipher_info': not all control paths return a value
   Caesar.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Debug\Caesar.exe

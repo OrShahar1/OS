@@ -21,9 +21,6 @@
     <ClCompile Include="caesar_encryption_decryption.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tests.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="thread_mgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,12 +30,12 @@
     <ClCompile Include="cipher_thread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="init_cipher_thread_input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caesar_encryption_decryption.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="thread_mgr.h">
@@ -48,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cipher_thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="init_cipher_thread_input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

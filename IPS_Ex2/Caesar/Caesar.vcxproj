@@ -142,15 +142,15 @@
     <ClCompile Include="caesar_encryption_decryption.c" />
     <ClCompile Include="cipher_thread.c" />
     <ClCompile Include="error_mgr.c" />
+    <ClCompile Include="init_cipher_thread_input.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="tests.c" />
     <ClCompile Include="thread_mgr.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="caesar_encryption_decryption.h" />
     <ClInclude Include="cipher_thread.h" />
     <ClInclude Include="error_mgr.h" />
-    <ClInclude Include="tests.h" />
+    <ClInclude Include="init_cipher_thread_input.h" />
     <ClInclude Include="thread_mgr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

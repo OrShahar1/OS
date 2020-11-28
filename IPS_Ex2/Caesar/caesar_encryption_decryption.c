@@ -54,7 +54,6 @@ char* line_cipher_execute(char* line, bool to_decrypt, int key)
 
 		if (input_char_type != CHAR_TO_IGNORE)
 		{
-		//	printf("%d", classify_char(current_char));
 			new_char = char_cipher_execute(to_decrypt, input_char_type, current_char, key);
 			line[i] = new_char;
 		}
@@ -74,8 +73,6 @@ char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_
 
 	new_char = current_cipher.ref_char 
 		+ calc_modulo((input_char - current_cipher.ref_char + cipher_mul * key), current_cipher.modulo_num);
-
-	//printf("%d %c --> %c\n", input_char_type, input_char, new_char);
 
 	return new_char;
 
