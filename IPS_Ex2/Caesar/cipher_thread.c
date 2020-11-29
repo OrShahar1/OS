@@ -32,7 +32,12 @@ int WINAPI cipher_thread(LPVOID Argument)
     HANDLE thread_input_file, thread_output_file;
     DWORD dwPtr_in, dwPtr_out;
     int block_length;
-
+    
+    block_length = (int)(thread_input->line_block_limits.end - thread_input->line_block_limits.start);
+    
+    if (block_length == 0)
+        return (int)status;
+    
     thread_input_file =
         CreateFileA(thread_input->input_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_TEMPORARY, NULL);
 
@@ -56,8 +61,6 @@ int WINAPI cipher_thread(LPVOID Argument)
         goto cipher_thread_exit;
     }
 
-    block_length = (int)(thread_input->line_block_limits.end - thread_input->line_block_limits.start);
-
     status = thread_cipher_execute(thread_input_file, thread_output_file,
         thread_input->to_decrypt, thread_input->key, block_length);
 
@@ -78,7 +81,7 @@ error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_outpu
     BOOL return_code;
 
     line_buffer = (char*)malloc(block_length + 1);
-
+  //  printf("%d ", block_length);
     if (line_buffer == NULL)
     {
         print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
@@ -96,7 +99,7 @@ error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_outpu
     line_buffer[block_length] = '\0';
 
     line_buffer = line_cipher_execute(line_buffer, to_decrypt, key);
-
+    printf(line_buffer);
     return_code = WriteFile(thread_output_file, line_buffer, block_length, &dwBytesWritten, NULL);
 
     if (return_code == false)

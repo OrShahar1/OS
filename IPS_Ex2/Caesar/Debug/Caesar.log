@@ -1,13 +1,6 @@
-﻿  caesar_encryption_decryption.c
-  cipher_thread.c
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(62,66): warning C4047: 'function': 'block_limits *' differs in levels of indirection from 'int'
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(62,54): warning C4024: 'thread_cipher_execute': different types for formal and actual parameter 5
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\cipher_thread.c(71,119): warning C4028: formal parameter 5 different from declaration
-  thread_mgr.c
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(57,36): warning C4013: 'open_empty_output_file' undefined; assuming extern returning int
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(76,51): warning C4013: 'check_wait_code_and_terminate_threads' undefined; assuming extern returning int
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(80,37): warning C4013: 'check_threads_exit_code' undefined; assuming extern returning int
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(172,9): warning C4101: 'thread_index': unreferenced local variable
-  Generating Code...
-C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Caesar\caesar_encryption_decryption.c(117): warning C4715: 'get_cipher_info': not all control paths return a value
-  Caesar.vcxproj -> C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex2\Debug\Caesar.exe
+﻿  thread_mgr.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(57,36): warning C4013: 'open_empty_output_file' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(76,51): warning C4013: 'check_wait_code_and_terminate_threads' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(80,37): warning C4013: 'check_threads_exit_code' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(172,9): warning C4101: 'thread_index': unreferenced local variable
+  Caesar.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Debug\Caesar.exe
