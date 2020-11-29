@@ -74,6 +74,10 @@ exit_main:
 	return (int)status;
 }
 
+/// parse_data_from_cmd
+/// inputs:  argv (command line input ) , key, line and number_of_thread decrypt ot encrypt key 
+/// outputs: - none, void function
+/// summary: A function that fills the fields of key ,number_of_thread , to_decrypt 
 void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool* to_decrypt)
 {
 	*key = atoi(cmd_data[KEY_INDEX]);
@@ -81,6 +85,10 @@ void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool
 	*to_decrypt = (strcmp(cmd_data[ENCRYPT_DECRYPT_FLAG_INDEX], DECRYPTION_FLAG) == 0);
 }
 
+/// set_file_paths
+/// inputs:  p_input_path ,  p_output_path , input_path_main_arg , decrypt ot encrypt key
+/// outputs: - error code
+/// summary: calculate input and ouput path and store them in  p_input_path & p_output_path
 error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* input_path_main_arg, bool to_decrypt)
 {
 	int input_path_len, output_path_len_max;
@@ -129,6 +137,10 @@ error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* inp
 	return SUCCESS_CODE;
 }
 
+/// check_args_num
+/// inputs:  argc 
+/// outputs: - error code 
+/// summary: checking if argc == 5 ( correct number of inputs ) 
 error_code_t check_args_num(int argc) 
 {
 	if (argc == ARGS_NUM)
@@ -138,18 +150,27 @@ error_code_t check_args_num(int argc)
 	return ARGS_NUM_ERROR;
 }
 
+/// check_if_valid_args
+/// inputs:  number_of_threads ,  encrypt_or_decrypt_flag
+/// outputs: error code 
+/// summary:  check validation of number_of_threads ( greater than 0 )  
+///			  encrypt_or_decrypt_flag ( -e or -d )
 error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag)
 {
 	if ((strcmp(encrypt_or_decrypt_flag, DECRYPTION_FLAG) != 0 && 
 		strcmp(encrypt_or_decrypt_flag, ENCRYPTION_FLAG) != 0) ||
 		number_of_threads <= 0)
 	{
-		return NOT_VALID_ARGS;
 		print_error(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
+		return NOT_VALID_ARGS;
 	}
 	return SUCCESS_CODE;
 }
 
+/// free_main_resources
+/// inputs:  input_path ,  output_path
+/// outputs: none, void function 
+/// summary:  free all main resources ( input_path , output_path ) 
 void free_main_resources(char* input_path, char* output_path)
 {
 	if (input_path != NULL)

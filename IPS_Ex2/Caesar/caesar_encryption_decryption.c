@@ -41,6 +41,10 @@ bool is_char_in_range(char my_char, char range_start, char range_end);
 int calc_modulo(int divident, int divisor); 
 
 
+/// line_cipher_execute
+/// inputs:  line , to_decrypt , key
+/// outputs: new line
+/// summary: return new line after execution decrypted \ encrypted opertions
 char* line_cipher_execute(char* line, bool to_decrypt, int key)
 {
 	char current_char, new_char;
@@ -64,6 +68,10 @@ char* line_cipher_execute(char* line, bool to_decrypt, int key)
 	return line;
 }
 
+/// char_cipher_execute
+/// inputs:  to_decrypt , input_char_type , input_char, key
+/// outputs: new_char 
+/// summary: new_char after execution decrypted \ encrypted opertions
 char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_char, int key)
 {
 	char new_char; 
@@ -77,6 +85,11 @@ char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_
 	return new_char;
 
 }
+
+/// calc_modulo
+/// inputs:  divident , divisor
+/// outputs: divident % divisor
+/// summary: return the modulo of divident , divisor
 int calc_modulo(int divident, int divisor) 
 {
 	while (divident < 0)
@@ -84,6 +97,11 @@ int calc_modulo(int divident, int divisor)
 	return (divident % divisor); 
 
 }
+
+/// get_cipher_info
+/// inputs:  input_char_type
+/// outputs: cipher_info  ( UPPERCASE_CIPHER , LOWERCASE_CIPHER , DIGIT_CIPHER )
+/// summary: checks if the char_type is a small uppercase letter or digit and returns output accordingly 
 cipher_info get_cipher_info(char_type input_char_type)
 {
 	switch (input_char_type) {
@@ -98,6 +116,10 @@ cipher_info get_cipher_info(char_type input_char_type)
 	}
 }
 
+/// classify_char
+/// inputs:  input_char
+/// outputs: char_type  ( UPPERCASE , LOWERCASE , DIGIT , CHAR_TO_IGNORE)
+/// summary: checks if the character is a small uppercase letter or digit and returns output accordingly 
 char_type classify_char(char input_char)
 {
 
@@ -114,6 +136,10 @@ char_type classify_char(char input_char)
 
 }
 
+/// is_char_in_range
+/// inputs:  my_char ,  range_start , range_end
+/// outputs: bool 
+/// summary:  check if my_char is in range of [range_start - range_end]
 bool is_char_in_range(char my_char, char range_start, char range_end)
 {
 	return (my_char >= range_start && my_char <= range_end);

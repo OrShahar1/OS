@@ -67,6 +67,7 @@ cipher_thread_exit:
     return (int)status; 
 }
 
+
 error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_output_file, bool to_decrypt, int key, int block_length)
 {
     error_code_t status = SUCCESS_CODE;
@@ -111,6 +112,10 @@ thread_cipher_execute_exit:
     return status;
 }
 
+/// free_cipher_thread_resources
+/// inputs:  p_thread_input_file , p_thread_output_file
+/// outputs: void   
+/// summary: if an error occures -> relase files Handles resources
 void free_cipher_thread_resources(HANDLE* p_thread_input_file, HANDLE* p_thread_output_file)
 {
     if (*p_thread_input_file != INVALID_HANDLE_VALUE)

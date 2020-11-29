@@ -1,4 +1,0 @@
-This is an example.
-Test, 1, 2, 3, do you copy?
-There is nothing special about it - really, I swear!
-That's it, move along - there is nothing to see here

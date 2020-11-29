@@ -27,7 +27,7 @@ const char* MSG_ERR_SEMAPHORE_WAIT_TIMEOUT = " Timeout while waiting for semapho
 /// print_error
 /// inputs:  error msg, file, line and function name where the error happended
 /// outputs: -
-/// summary: prints an error message and terminates program with -1 exitcode
+/// summary: prints an error message
 void print_error(const char* msg, const char* file, int line, const char* func_name)
 {
     printf("ERROR: %s\n", msg);
