@@ -1,3 +1,8 @@
+#pragma warning( disable:6011 )
+#pragma warning( disable:4028 )
+#pragma warning( disable:4024 )
+#pragma warning( disable:4047 )
+
 #include <windows.h>
 #include <stdio.h>           
 #include "cipher_thread.h"
@@ -11,15 +16,22 @@ static const int WAIT_FOR_SEMAPHORE_TIME = 5000;
 // function declarations ------------------------------------------------------
 error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_output_file,
                                 bool to_decrypt, int key, block_limits* line_block_limits); 
-void free_cipher_thread_resources(HANDLE* thread_input_file, HANDLE* thread_output_file); 
+void free_cipher_thread_resources(HANDLE* p_thread_input_file, HANDLE* p_thread_output_file); 
 
 // function implementations ------------------------------------------------------
+
+/// cipher_thread
+/// inputs:  Argument (struct that holds the thread's inputs) 
+/// outputs: int (status) 
+/// summary: main thread function , read file --> execute thread_cipher_execute --> write to file 
 int WINAPI cipher_thread(LPVOID Argument)
 {
     cipher_thread_input* thread_input = (cipher_thread_input*)Argument;
     error_code_t status = SUCCESS_CODE;
  
     DWORD wait_result;
+
+    // wait for main thread to release semaphore, until then wait
     wait_result = WaitForSingleObject(*(thread_input->p_thread_start_semaphore), WAIT_FOR_SEMAPHORE_TIME);
 
     if (wait_result != WAIT_OBJECT_0)
@@ -38,6 +50,7 @@ int WINAPI cipher_thread(LPVOID Argument)
     if (block_length == 0)
         return (int)status;
     
+    // open files for reading / writing 
     thread_input_file =
         CreateFileA(thread_input->input_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_TEMPORARY, NULL);
 
@@ -50,7 +63,8 @@ int WINAPI cipher_thread(LPVOID Argument)
         status = FILE_OPEN_FAILED;
         goto cipher_thread_exit;
     }
-    
+
+    // move file pointers to correct place 
     dwPtr_in = SetFilePointer(thread_input_file, thread_input->line_block_limits.start, NULL, FILE_BEGIN);
     dwPtr_out = SetFilePointer(thread_output_file, thread_input->line_block_limits.start, NULL, FILE_BEGIN);
 
@@ -61,8 +75,9 @@ int WINAPI cipher_thread(LPVOID Argument)
         goto cipher_thread_exit;
     }
 
+    // encrypt / decrypt block 
     status = thread_cipher_execute(thread_input_file, thread_output_file,
-        thread_input->to_decrypt, thread_input->key, block_length);
+                    thread_input->to_decrypt, thread_input->key, block_length);
 
 cipher_thread_exit:
     free_cipher_thread_resources(&thread_input_file, &thread_output_file); 
@@ -70,7 +85,10 @@ cipher_thread_exit:
     return (int)status; 
 }
 
-
+/// thread_cipher_execute
+/// inputs:  thread_input_file , thread_output_file, to_decrypt , key , block_length
+/// outputs: error code   
+/// summary: execute thread. read file --> decrypt / encrypt block --> write to file  
 error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_output_file, bool to_decrypt, int key, int block_length)
 {
     error_code_t status = SUCCESS_CODE;
@@ -81,12 +99,13 @@ error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_outpu
     BOOL return_code;
 
     line_buffer = (char*)malloc(block_length + 1);
-  //  printf("%d ", block_length);
-    if (line_buffer == NULL)
-    {
-        print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
-        return MEM_ALLOC_ERROR;
-    }
+
+    status = check_mem_alloc(line_buffer, __FILE__, __LINE__, __func__);
+
+	if (status != SUCCESS_CODE)
+		return status;
+
+    // read file ( block length bytes ) 
     return_code = ReadFile(thread_input_file, line_buffer, block_length, &dwBytesRead, NULL);
 
     if (return_code == false)
@@ -98,8 +117,10 @@ error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_outpu
 
     line_buffer[block_length] = '\0';
 
+    // decrypt / encrypt specific line
     line_buffer = line_cipher_execute(line_buffer, to_decrypt, key);
-    printf(line_buffer);
+    
+    // write file ( block length bytes ) 
     return_code = WriteFile(thread_output_file, line_buffer, block_length, &dwBytesWritten, NULL);
 
     if (return_code == false)
@@ -107,6 +128,7 @@ error_code_t thread_cipher_execute(HANDLE thread_input_file, HANDLE thread_outpu
         print_error(MSG_ERR_FILE_WRITING_FAILED, __FILE__, __LINE__, __func__);
         status = FILE_WRITING_FAILED;
     }
+
 thread_cipher_execute_exit:
 
     if (line_buffer != NULL)
@@ -117,8 +139,8 @@ thread_cipher_execute_exit:
 
 /// free_cipher_thread_resources
 /// inputs:  p_thread_input_file , p_thread_output_file
-/// outputs: void   
-/// summary: if an error occures -> relase files Handles resources
+/// outputs: -   
+/// summary: release files handles 
 void free_cipher_thread_resources(HANDLE* p_thread_input_file, HANDLE* p_thread_output_file)
 {
     if (*p_thread_input_file != INVALID_HANDLE_VALUE)

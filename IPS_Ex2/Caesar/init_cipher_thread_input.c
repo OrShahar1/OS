@@ -32,11 +32,10 @@ error_code_t initialize_thread_inputs(cipher_thread_input* p_thread_inputs[], HA
     thread_inputs = (cipher_thread_input*)malloc(threads_num * sizeof(cipher_thread_input));
 
     // if malloc failed return with error
-    if (thread_inputs == NULL)
-    {
-        print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
-        return MEM_ALLOC_ERROR;
-    }
+    status = check_mem_alloc(thread_inputs, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
 
     // initialize the thread_inputs fields 
     for (thread_index = 0; thread_index < threads_num; thread_index++)
@@ -45,6 +44,7 @@ error_code_t initialize_thread_inputs(cipher_thread_input* p_thread_inputs[], HA
             to_decrypt, key, input_path, output_path);
     }
 
+    // initialize the threads' block limits  
     status = initialize_threads_block_limits(thread_inputs, input_path, threads_num);
 
     *p_thread_inputs = thread_inputs;
@@ -54,8 +54,8 @@ error_code_t initialize_thread_inputs(cipher_thread_input* p_thread_inputs[], HA
 
 /// initialize_thread_input_fields
 /// inputs:  thread_input ,  p_thread_start_semaphore , to_decrypt , key , input_path , output_path
-/// outputs: none, void function 
-/// summary: initialize thread_inputs fields, without init block_limits 
+/// outputs: -
+/// summary: initialize thread_inputs fields, without the block limits 
 void initialize_thread_input_fields(cipher_thread_input* thread_input, HANDLE* p_thread_start_semaphore,
     bool to_decrypt, int key, const char* input_path, const char* output_path)
 {
@@ -69,10 +69,9 @@ void initialize_thread_input_fields(cipher_thread_input* thread_input, HANDLE* p
 /// initialize_threads_block_limits
 /// inputs:  thread_inputs[] ,  input_path , threads_num  
 /// outputs: error code 
-/// summary: initialize thread_inputs.line_block_limits struct of each thread
-//           calc max and min block sizes
-//           read file and get start and end in each block and fill line block limits in each thread input
-//           count lines in file                                          
+/// summary: initialize thread_inputs.line_block_limits struct of each thread by
+///          calculating max and min block sizes and amounts and then 
+///          reading the file and counting number of bytes in each block                              
 error_code_t initialize_threads_block_limits(cipher_thread_input* thread_inputs, const char* input_path, int threads_num)
 {
     error_code_t status = SUCCESS_CODE;
@@ -109,23 +108,16 @@ init_threads_block_limits_exit:
 /// init_block_limits
 /// inputs:  thread_inputs ,  thread_input_file , threads_num , lines_num 
 /// outputs: error code 
-/// summary: initialize thread_inputs.line_block_limits struct of one thread
+/// summary: initialize thread_inputs.line_block_limits struct of all threads 
 error_code_t init_block_limits(cipher_thread_input* thread_inputs, HANDLE thread_input_file, int threads_num, int lines_num)
 {
     error_code_t status = SUCCESS_CODE;
     int max_block_size, min_block_size, max_block_amount, min_block_amount;
 
     calc_block_sizes_and_amounts(&max_block_amount, &min_block_amount, &max_block_size, &min_block_size, threads_num, lines_num);
-
-    //printf("%d %d %d %d\n\n\n", max_block_amount, min_block_amount, max_block_size, min_block_size);
-
   
-    int bytes_counter = 0;
-    int lines_block_size = 0;
-    int bytes_block_size = 0;
-    int thread_index = 0;
-    // printf("%d\n\n\n", max_block_amount);
-    // printf("%d\n\n\n", min_block_amount);
+    int bytes_counter = 0, lines_block_size = 0, bytes_block_size = 0, thread_index = 0;
+
     while (min_block_amount > 0 || max_block_amount > 0)
     {
         if (min_block_amount > 0)
@@ -133,7 +125,6 @@ error_code_t init_block_limits(cipher_thread_input* thread_inputs, HANDLE thread
             lines_block_size = min_block_size;
             min_block_amount--;
         }
-
         else if (max_block_amount > 0)
         {
             lines_block_size = max_block_size;
@@ -141,14 +132,9 @@ error_code_t init_block_limits(cipher_thread_input* thread_inputs, HANDLE thread
         }
 
         status = advance_file_and_get_bytes_block_size(&thread_input_file, lines_block_size, &bytes_block_size);
-
-       // if (min_block_amount == 0 && max_block_amount == 0)
-        
-            
-        printf("%d: %d %d\n", thread_index, bytes_counter, bytes_block_size);
         
         if (status != SUCCESS_CODE)
-            return INIT_THREADS_BLOCK_LIMITS_ERR;
+            return status;
 
         thread_inputs[thread_index].line_block_limits.start = bytes_counter;
 
@@ -157,26 +143,21 @@ error_code_t init_block_limits(cipher_thread_input* thread_inputs, HANDLE thread
         thread_inputs[thread_index].line_block_limits.end = bytes_counter;
        
         if (min_block_amount == 0 && max_block_amount == 0) 
-        {
             thread_inputs[thread_index].line_block_limits.end -= 1;
-          //  printf("%d %d\n\n\n", thread_inputs[thread_index].line_block_limits.start, thread_inputs[thread_index].line_block_limits.end);
-
-           // printf("%d\n\n\n", thread_index);
-        }
+        
         thread_index++;
     }
-
     return status;
 }
 
-/// get_lines_number_in_file
+/// calc_block_sizes_and_amounts
 /// inputs:  max_block_amount ,  min_block_amount , max_block_size , min_block_size ,threads_num ,lines_num 
 /// outputs: error code 
 /// summary:   calculate min block size (min bs) and max block size (max bs) 
 ///            min bs = int(#L/#T), max bs = int(#L/#T) + 1                 
 ///            amount of max bs = #L % #T, amount of mix bs = #T - #L % #T
 void calc_block_sizes_and_amounts(int* max_block_amount,int* min_block_amount,int* max_block_size,
-                                    int* min_block_size,int threads_num, int  lines_num)
+                                    int* min_block_size, int threads_num, int  lines_num)
 {
     *max_block_amount = lines_num % threads_num;
     *min_block_amount = threads_num - lines_num % threads_num;
@@ -188,7 +169,7 @@ void calc_block_sizes_and_amounts(int* max_block_amount,int* min_block_amount,in
 /// get_lines_number_in_file
 /// inputs:  input_file ,  lines_amount 
 /// outputs: error code 
-/// summary:  updtaed lines_amount with the number of lines in file
+/// summary: fills lines_amount with the number of lines in file
 error_code_t get_lines_number_in_file(HANDLE input_file, int* lines_amount)
 {
     BOOL return_code;
@@ -197,6 +178,7 @@ error_code_t get_lines_number_in_file(HANDLE input_file, int* lines_amount)
     char char_buffer[CHAR_BUFFER_SIZE + 1];
     DWORD bytes_read, dwPtr;
 
+    // read file and count lines 
     return_code = ReadFile(input_file, char_buffer, CHAR_BUFFER_SIZE, &bytes_read, NULL);
 
     while (return_code != FALSE && bytes_read != 0)
@@ -216,6 +198,7 @@ error_code_t get_lines_number_in_file(HANDLE input_file, int* lines_amount)
     lines_counter++;
     *lines_amount = lines_counter;
 
+    // return file pointer to the beggining of the file
     dwPtr = SetFilePointer(input_file, 0, NULL, FILE_BEGIN);
 
     if (dwPtr == INVALID_SET_FILE_POINTER)
@@ -230,9 +213,9 @@ error_code_t get_lines_number_in_file(HANDLE input_file, int* lines_amount)
 /// advance_file_and_get_bytes_block_size
 /// inputs:  thread_input_file ,  lines_block_size , p_bytes_block_size
 /// outputs: error code 
-/// summary:  read the file until  EOF or lines_block_size lines is passed 
-///           updated *p_bytes_block_size with the number of byte from the currect place 
-///           of thread_input_file until EOF or lines_block_size lines is passed
+/// summary:  read the file until EOF or lines_block_size lines is reached 
+///           updates *p_bytes_block_size with the number of bytes in the block,
+///           also advances file pointer for the next block
 error_code_t advance_file_and_get_bytes_block_size(HANDLE* p_thread_input_file, int lines_block_size, int* p_bytes_block_size)
 {
     
@@ -248,7 +231,7 @@ error_code_t advance_file_and_get_bytes_block_size(HANDLE* p_thread_input_file, 
     char char_buffer[CHAR_BUFFER_SIZE + 1];
     DWORD bytes_read;
     
-
+    // read file, count lines and update bytes_block_counter
     return_code = ReadFile(*p_thread_input_file, char_buffer, CHAR_BUFFER_SIZE, &bytes_read, NULL);
 
     while (return_code != FALSE && bytes_read != 0)
@@ -263,12 +246,13 @@ error_code_t advance_file_and_get_bytes_block_size(HANDLE* p_thread_input_file, 
         return_code = ReadFile(*p_thread_input_file, char_buffer, CHAR_BUFFER_SIZE, &bytes_read, NULL);
     }
     bytes_block_size++;
+
     if (return_code == false)
     {
         print_error(MSG_ERR_FILE_READING_FAILED, __FILE__, __LINE__, __func__);
         return FILE_READING_FAILED;
     }
-   // printf("%d\n", bytes_block_size);
+
     *p_bytes_block_size = bytes_block_size;
     return SUCCESS_CODE;
 }

@@ -1,3 +1,8 @@
+#pragma warning( disable:6011 )
+#pragma warning( disable:6387 )
+#pragma warning( disable:4083 )
+#pragma warning( disable:4090 )
+
 // include headers --------------------------------------
 
 #include <stdio.h>
@@ -8,6 +13,7 @@
 #include "thread_mgr.h"
 
 // enums  ----------------------------------------------
+
 typedef enum _arg_index{
 	INPUT_PATH_INDEX = 1,
 	KEY_INDEX,
@@ -45,7 +51,6 @@ int main(int argc, char* argv[])
 	// make sure that we got the anticipated number of arguments
 	status = check_args_num(argc);
 
-	// in case of an error --> finish program
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 	
@@ -56,17 +61,16 @@ int main(int argc, char* argv[])
 	// check if input args  are valid: thread num > 0 and e/d flag is "-d"/"-e"
 	status = check_if_valid_args(number_of_threads, argv[ENCRYPT_DECRYPT_FLAG_INDEX]);
 
-	// in case of an error --> finish program
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
 	// get the file input and output path from argv[INPUT_PATH_INDEX]
 	status = set_file_paths(&input_path, &output_path, argv[INPUT_PATH_INDEX], to_decrypt);
 
-	// in case of an error --> finish program
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
+	// call cipher_thread_manager to create threads and encrypt / decrypt file 
 	status = cipher_thread_manager(number_of_threads, to_decrypt, key, input_path, output_path);
 
 exit_main:
@@ -75,27 +79,29 @@ exit_main:
 }
 
 /// parse_data_from_cmd
-/// inputs:  argv (command line input ) , key, line and number_of_thread decrypt ot encrypt key 
-/// outputs: - none, void function
-/// summary: A function that fills the fields of key ,number_of_thread , to_decrypt 
-void parse_data_from_cmd(char* cmd_data[], int* key, int* number_of_thread, bool* to_decrypt)
+/// inputs:  argv (command line input) and key, number_of_threads and to_decrypt pointers 
+/// outputs: - 
+/// summary: A function that fills the variables  key, number_of_threads and to_decrypt 
+void parse_data_from_cmd(char* cmd_data[], int* p_key, int* p_number_of_threads, bool* p_to_decrypt)
 {
-	*key = atoi(cmd_data[KEY_INDEX]);
-	*number_of_thread = atoi(cmd_data[NUMBER_OF_THREADS_INDEX]);
-	*to_decrypt = (strcmp(cmd_data[ENCRYPT_DECRYPT_FLAG_INDEX], DECRYPTION_FLAG) == 0);
+	*p_key = atoi(cmd_data[KEY_INDEX]);
+	*p_number_of_threads = atoi(cmd_data[NUMBER_OF_THREADS_INDEX]);
+	*p_to_decrypt = (strcmp(cmd_data[ENCRYPT_DECRYPT_FLAG_INDEX], DECRYPTION_FLAG) == 0);
 }
 
 /// set_file_paths
-/// inputs:  p_input_path ,  p_output_path , input_path_main_arg , decrypt ot encrypt key
-/// outputs: - error code
-/// summary: calculate input and ouput path and store them in  p_input_path & p_output_path
+/// inputs:  p_input_path,  p_output_path , input_path_main_arg , to_decrypt
+/// outputs: error code
+/// summary: calculate input and output paths and store them in the addresses
+///          which are held by p_input_path & p_output_path
 error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* input_path_main_arg, bool to_decrypt)
 {
+	error_code_t status = SUCCESS_CODE;
 	int input_path_len, output_path_len_max;
-	char *input_path, *output_path;
+	char* input_path, *output_path;
 	char* output_file_name;
-	
-	// calculate input and ouput path lengths 
+
+	// calculate input and output path lengths 
 	// note that input_path_len + strlen(OUTPUT_FILE_NAME) is bigger than the actual output path length
 	// this is done for implemetation simplicity 
 	input_path_len = strlen(input_path_main_arg) + 1;
@@ -103,15 +109,20 @@ error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* inp
 
 	// allocate memory for paths strings
 	input_path = (char*)malloc(sizeof(char) * input_path_len);
+
+	status = check_mem_alloc(input_path, __FILE__, __LINE__, __func__);
+
+	if (status != SUCCESS_CODE)
+		return status;
+
 	output_path = (char*)malloc(sizeof(char) * output_path_len_max);
 
-	// if memory allocation error print and return error 
-	if (input_path == NULL || output_path == NULL)
-	{
-		print_error(MSG_ERR_MEM_ALLOC, __FILE__, __LINE__, __func__);
-		return MEM_ALLOC_ERROR;
-	}
+	status = check_mem_alloc(output_path, __FILE__, __LINE__, __func__);
 
+	if (status != SUCCESS_CODE)
+		return status;
+
+	// copy input_path_main_arg to both strings
 	strcpy_s(input_path, input_path_len, input_path_main_arg);
 	strcpy_s(output_path, output_path_len_max, input_path_main_arg);
 
@@ -134,13 +145,13 @@ error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* inp
 	// set path pointers 
 	*p_input_path = input_path;
 	*p_output_path = output_path;
-	return SUCCESS_CODE;
+	return status;
 }
 
 /// check_args_num
 /// inputs:  argc 
-/// outputs: - error code 
-/// summary: checking if argc == 5 ( correct number of inputs ) 
+/// outputs: error code 
+/// summary: checks if argc == 5 ( correct number of inputs ) 
 error_code_t check_args_num(int argc) 
 {
 	if (argc == ARGS_NUM)
@@ -153,8 +164,8 @@ error_code_t check_args_num(int argc)
 /// check_if_valid_args
 /// inputs:  number_of_threads ,  encrypt_or_decrypt_flag
 /// outputs: error code 
-/// summary:  check validation of number_of_threads ( greater than 0 )  
-///			  encrypt_or_decrypt_flag ( -e or -d )
+/// summary: check validation of number_of_threads ( greater than 0 )  
+///			 encrypt_or_decrypt_flag ( -e or -d )
 error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag)
 {
 	if ((strcmp(encrypt_or_decrypt_flag, DECRYPTION_FLAG) != 0 && 

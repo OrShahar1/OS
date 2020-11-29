@@ -1,6 +1,8 @@
 #ifndef ERROR_MGR_H
 #define ERROR_MGR_H
 
+// enums ----------------------------------------------------------------------
+
 typedef enum { 
     SUCCESS_CODE, 
     ARGS_NUM_ERROR,
@@ -15,9 +17,10 @@ typedef enum {
     GET_THREAD_EXIT_CODE_FAILED,
     THREADS_TERMINATION_FAILED,
     SEMAPHORE_CREATION_FAILED,
-    SEMAPHORE_WAIT_TIMEOUT,
-    INIT_THREADS_BLOCK_LIMITS_ERR
+    SEMAPHORE_WAIT_TIMEOUT
 } error_code_t;
+
+// constants ----------------------------------------------------------------------
 
 extern const char* MSG_ERR_NUM_ARGS;
 extern const char* MSG_ERR_CANNOT_OPEN_FILE;
@@ -37,7 +40,18 @@ extern const char* MSG_ERR_FILE_WRITING_FAILED;
 extern const char* MSG_ERR_SEMAPHORE_CREATION_FAILED;
 extern const char* MSG_ERR_SEMAPHORE_WAIT_TIMEOUT;
 
+// function declarations ------------------------------------------------------
+
+/// print_error
+/// inputs:  error msg, file, line and function name where the error happended
+/// outputs: -
+/// summary: prints an error message
 void print_error(const char* msg, const char* file, int line, const char* func_name);
 
+/// check_mem_alloc
+/// inputs:  ptr , file, line and function name where the error happended
+/// outputs: -
+/// summary: check ptr alloction & prints an error message
+error_code_t check_mem_alloc(void* ptr, const char* file, int line, const char* func_name); 
 
 #endif 

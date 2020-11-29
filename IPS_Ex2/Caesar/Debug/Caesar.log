@@ -1,6 +1,6 @@
-﻿  thread_mgr.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(57,36): warning C4013: 'open_empty_output_file' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(76,51): warning C4013: 'check_wait_code_and_terminate_threads' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(80,37): warning C4013: 'check_threads_exit_code' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\thread_mgr.c(172,9): warning C4101: 'thread_index': unreferenced local variable
+﻿  caesar_encryption_decryption.c
+  init_cipher_thread_input.c
+  thread_mgr.c
+  Generating Code...
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Caesar\caesar_encryption_decryption.c(117): warning C4715: 'get_cipher_info': not all control paths return a value
   Caesar.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex2\Debug\Caesar.exe

@@ -1,3 +1,5 @@
+#pragma warning( disable:4715 )
+
 // include headers ------------------------------------------------------------
 
 #include <stdio.h>
@@ -14,7 +16,6 @@ typedef enum _character_type {
 	DIGIT,
 	CHAR_TO_IGNORE
 } char_type;
-
 
 // structs  -------------------------------------------------------------------
 
@@ -40,11 +41,12 @@ char_type classify_char(char input_char);
 bool is_char_in_range(char my_char, char range_start, char range_end);
 int calc_modulo(int divident, int divisor); 
 
+// functions implementations  ----------------------------------------------------
 
 /// line_cipher_execute
 /// inputs:  line , to_decrypt , key
-/// outputs: new line
-/// summary: return new line after execution decrypted \ encrypted opertions
+/// outputs: line
+/// summary: return line after encrypting / decrypting line (in place) 
 char* line_cipher_execute(char* line, bool to_decrypt, int key)
 {
 	char current_char, new_char;
@@ -64,14 +66,13 @@ char* line_cipher_execute(char* line, bool to_decrypt, int key)
 		else
 			line[i] = current_char;
 	}
-
 	return line;
 }
 
 /// char_cipher_execute
 /// inputs:  to_decrypt , input_char_type , input_char, key
 /// outputs: new_char 
-/// summary: new_char after execution decrypted \ encrypted opertions
+/// summary: char after encrypting / decrypting 
 char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_char, int key)
 {
 	char new_char; 
@@ -95,7 +96,6 @@ int calc_modulo(int divident, int divisor)
 	while (divident < 0)
 		divident += divisor;
 	return (divident % divisor); 
-
 }
 
 /// get_cipher_info
@@ -139,7 +139,7 @@ char_type classify_char(char input_char)
 /// is_char_in_range
 /// inputs:  my_char ,  range_start , range_end
 /// outputs: bool 
-/// summary:  check if my_char is in range of [range_start - range_end]
+/// summary:  check if my_char is in range [range_start - range_end]
 bool is_char_in_range(char my_char, char range_start, char range_end)
 {
 	return (my_char >= range_start && my_char <= range_end);
