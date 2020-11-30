@@ -1,3 +1,6 @@
+
+// include headers ------------------------------------------------------------
+
 #include <stdio.h>
 #include <windows.h>
 #include "init_cipher_thread_input.h"
@@ -118,6 +121,8 @@ error_code_t init_block_limits(cipher_thread_input* thread_inputs, HANDLE thread
   
     int bytes_counter = 0, lines_block_size = 0, bytes_block_size = 0, thread_index = 0;
 
+    // first fill min_block_amount thread inputs with min_block_size line blocks, 
+    //  then fill max_block_amount thread inputs with max_block_size line blocks
     while (min_block_amount > 0 || max_block_amount > 0)
     {
         if (min_block_amount > 0)

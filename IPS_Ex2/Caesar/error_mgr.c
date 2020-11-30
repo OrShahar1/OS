@@ -8,20 +8,20 @@
 // constants ------------------------------------------------------------------
 
 /// error messages to be used for "print_error" 
-const char* MSG_ERR_NUM_ARGS = "wrong amount of arguments (expected 4).";
-const char* MSG_ERR_CANNOT_OPEN_FILE = "couldn't open file";
-const char* MSG_ERR_MEM_ALLOC = "memory allocation error.";
-const char* MSG_ERR_GET_THREAD_EXIT_CODE_FAILED = "GetExitCodeThread failed.";
-const char* MSG_ERR_INVALID_HANDLE_VALUE = "got invalid handle value.";
-const char* MSG_ERR_CREATE_THREAD = "Thread creation failed.";
-const char* MSG_ERR_SET_FILE_POINTER_FAILED = "SetFilePointer failed";
-const char* MSG_ERR_THREADS_INPUTS_INITALIZATION_FAILED = "Threads inputs initalization failed";
-const char* MSG_ERR_THREADS_WAIT_TIMEOUT = " Timeout while waiting for threads to return"; 
-const char* MSG_ERR_THREADS_TERMINATION_FAILED = "Threads Termination failed";
-const char* MSG_ERR_FILE_READING_FAILED = "File reading failed."; 
-const char* MSG_ERR_FILE_WRITING_FAILED = "File writing failed.";
-const char* MSG_ERR_SEMAPHORE_CREATION_FAILED = "Creating semaphore failed."; 
-const char* MSG_ERR_SEMAPHORE_WAIT_TIMEOUT = " Timeout while waiting for semaphore to be released"; 
+const char* MSG_ERR_NUM_ARGS                       = "wrong amount of arguments.";
+const char* MSG_ERR_NOT_VALID_ARGS                 = "program received invalid argument.";
+const char* MSG_ERR_CANNOT_OPEN_FILE               = "couldn't open file";
+const char* MSG_ERR_MEM_ALLOC                      = "memory allocation error.";
+const char* MSG_ERR_GET_THREAD_EXIT_CODE_FAILED    = "GetExitCodeThread failed.";
+const char* MSG_ERR_INVALID_HANDLE_VALUE           = "got invalid handle value.";
+const char* MSG_ERR_CREATE_THREAD                  = "Thread creation failed.";
+const char* MSG_ERR_SET_FILE_POINTER_FAILED        = "SetFilePointer failed";
+const char* MSG_ERR_THREADS_WAIT_TIMEOUT           = " Timeout while waiting for threads to return"; 
+const char* MSG_ERR_THREADS_TERMINATION_FAILED     = "Threads Termination failed";
+const char* MSG_ERR_FILE_READING_FAILED            = "File reading failed."; 
+const char* MSG_ERR_FILE_WRITING_FAILED            = "File writing failed.";
+const char* MSG_ERR_SEMAPHORE_CREATION_FAILED      = "Creating semaphore failed."; 
+const char* MSG_ERR_SEMAPHORE_WAIT_TIMEOUT         = " Timeout while waiting for semaphore to be released"; 
 
 // functions implementations  ----------------------------------------------------
 

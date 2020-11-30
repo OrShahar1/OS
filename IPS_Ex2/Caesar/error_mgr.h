@@ -23,6 +23,7 @@ typedef enum {
 // constants ----------------------------------------------------------------------
 
 extern const char* MSG_ERR_NUM_ARGS;
+extern const char* MSG_ERR_NOT_VALID_ARGS; 
 extern const char* MSG_ERR_CANNOT_OPEN_FILE;
 extern const char* MSG_ERR_MEM_ALLOC;
 extern const char* MSG_ERR_PROCESS_CREATION_FAILED;

@@ -49,7 +49,7 @@ error_code_t cipher_thread_manager(int threads_num, bool to_decrypt, int key, co
         return SEMAPHORE_CREATION_FAILED;
     }
 
-    thread_handles = (HANDLE*)malloc(threads_num * sizeof(HANDLE));
+    thread_handles = (HANDLE*)calloc(threads_num, sizeof(HANDLE));
 
     status = check_mem_alloc(thread_handles, __FILE__, __LINE__, __func__);
 
@@ -62,7 +62,7 @@ error_code_t cipher_thread_manager(int threads_num, bool to_decrypt, int key, co
         goto cipher_thread_manager_exit;
 
     status = open_empty_output_file(output_path, thread_inputs[threads_num - 1].line_block_limits.end);
-
+   
     if (status != SUCCESS_CODE)
         goto cipher_thread_manager_exit;
     
@@ -264,21 +264,23 @@ open_empty_file_exit:
 /// free_threads_resources
 /// inputs:  thread_inputs[] ,  p_thread_start_semaphore , thread_inputs , threads_num
 /// outputs: - 
-/// summary: free all threads' recources
+/// summary: free all threads' resources
 void free_threads_resources(HANDLE* thread_handles, HANDLE thread_start_semaphore, cipher_thread_input* thread_inputs, int threads_num)
 {
     int thread_idx;
 
-    if (thread_inputs != NULL)
+    if (thread_handles != NULL)
     {
         for (thread_idx = 0; thread_idx < threads_num; thread_idx++)
-            CloseHandle(thread_handles[thread_idx]);
-
-        free(thread_inputs);
+        {
+            if (thread_handles[thread_idx] != NULL)            
+                CloseHandle(thread_handles[thread_idx]);
+        }
+        free(thread_handles);
     }
 
-    if (thread_handles != NULL)
-        free(thread_handles);
+    if (thread_inputs != NULL)
+        free(thread_inputs);
 
     if (thread_start_semaphore != NULL)
         CloseHandle(thread_start_semaphore);

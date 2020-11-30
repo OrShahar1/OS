@@ -29,6 +29,7 @@ static const char* ENCRYPTION_OUTPUT_FILE_NAME = "encrypted.txt";
 static const char DIR_SEPERATOR_CHAR = '\\';
 static const char* DECRYPTION_FLAG = "-d";
 static const char* ENCRYPTION_FLAG = "-e";
+static const int MAXIMUM_THREAD_NUM = 64; 
 
 // functions declarations  ----------------------------------------------
 
@@ -170,9 +171,9 @@ error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt
 {
 	if ((strcmp(encrypt_or_decrypt_flag, DECRYPTION_FLAG) != 0 && 
 		strcmp(encrypt_or_decrypt_flag, ENCRYPTION_FLAG) != 0) ||
-		number_of_threads <= 0)
+		number_of_threads <= 0 || number_of_threads > MAXIMUM_THREAD_NUM)
 	{
-		print_error(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
+		print_error(MSG_ERR_NOT_VALID_ARGS, __FILE__, __LINE__, __func__);
 		return NOT_VALID_ARGS;
 	}
 	return SUCCESS_CODE;
