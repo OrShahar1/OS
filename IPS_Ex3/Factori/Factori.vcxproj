@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="caesar_encryption_decryption.c" />
+    <ClCompile Include="primes_handler.c" />
     <ClCompile Include="cipher_thread.c" />
     <ClCompile Include="error_mgr.c" />
     <ClCompile Include="helpers.c" />
@@ -150,7 +150,7 @@
     <ClCompile Include="win_api_wrappers.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="caesar_encryption_decryption.h" />
+    <ClInclude Include="primes_handler.h" />
     <ClInclude Include="cipher_thread.h" />
     <ClInclude Include="error_mgr.h" />
     <ClInclude Include="helpers.h" />

@@ -21,10 +21,11 @@
 #include <windows.h>
 #include "win_api_wrappers.h"
 #include "error_mgr.h"
-#include "Queue.h"
+#include "Queue.h" 
+#include "primes_handler.h" 
 
 //#include "thread_mgr.h"
-
+#include <math.h>
 #include "helpers.h"
 
 // enums  ----------------------------------------------
@@ -58,12 +59,7 @@ int main(int argc, char* argv[])
 	char* priorities_path = NULL;
 	int tasks_num, threads_num;
 
-	queue* priority_queue;
-
-	status = InitializeQueue(&priority_queue);
-
-	if (status != SUCCESS_CODE)
-		goto exit_main;
+	queue* priority_queue = NULL;
 
 	// make sure that we got the anticipated number of arguments
 	status = check_args_num(argc, ARGS_NUM);
@@ -80,18 +76,40 @@ int main(int argc, char* argv[])
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
+	// initialize and fill priority queue
+	status = InitializeQueue(&priority_queue);
+
+	if (status != SUCCESS_CODE)
+		goto exit_main;
+
 	status = fill_priority_queue(priority_queue, priorities_path);
 
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
 
+	//---------------------------
+
+	int* primes = NULL;
+	int primes_amount = 0; 
+	int number = 125135426;
+
+	status = get_primes(number, &primes, &primes_amount);
 
 
+	printf("\n-----\n"); 
 
+	if(primes_amount>0)
+		printf("%d", primes[0]);
 
+	for (size_t i = 1; i < primes_amount; i++)
+	{
+		printf(", %d", primes[i]);
+	}
 
+	printf("\n-----\n");
 
+	printf("\n\n%d  -  %d\n\n", primes_amount , (int)sqrt(number)+1);
 
 	//---------------------------
 
@@ -189,5 +207,10 @@ void free_main_resources(queue* my_queue)  //char* input_path, char* output_path
 	if (my_queue != NULL)
 		DestroyQueue(&my_queue);
 }
+
+
+
+
+
 
 
