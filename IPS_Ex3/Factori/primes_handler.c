@@ -16,14 +16,74 @@
 
 // consts  --------------------------------------------------------------------
 
+static const char* HEADER_PRIMES_STRING = "The prime factors of %d are:";
+
+static const char* LINE_END = "\r\n";
 
 // functions declarations  ----------------------------------------------------
 int get_primes_with_duplicates(int number, int potential_prime, int* primes_array, int* p_primes_amount); 
-
+char* build_primes_string(char* primes_string, int primes_string_length, int  number, int* primes_array, int primes_amount);
+error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount);
+int calc_primes_string_len(int number, int* primes_array, int primes_amount);
+int get_number_len(int number);
 
 // functions implementations  ----------------------------------------------------
 
-/// 
+error_code_t get_primes_string(int number, char** p_primes_string)
+{
+	error_code_t status = SUCCESS_CODE;
+	char* primes_string = NULL;
+	int* primes_array = NULL;
+	int primes_amount, primes_string_length = 0;
+
+	status = get_primes(number, &primes_array, &primes_amount);
+
+	if (status != SUCCESS_CODE)
+		return status;
+
+	primes_string_length = calc_primes_string_len(number, primes_array, primes_amount);
+
+	primes_string_length += strlen(LINE_END) + 1;
+
+	primes_string = (char*)realloc(*p_primes_string, primes_string_length * sizeof(char));
+
+	status = check_mem_alloc(primes_string, __FILE__, __LINE__, __func__);
+
+	if (status != SUCCESS_CODE)
+		goto get_primes_string_exit;
+
+	build_primes_string(primes_string, primes_string_length, number, primes_array, primes_amount);
+
+	snprintf(primes_string, primes_string_length, "%s\r\n", primes_string);
+	
+	printf("### %d - %d ###\n", primes_string_length, strlen(primes_string));
+
+get_primes_string_exit:
+	*p_primes_string = primes_string;
+	if (primes_array != NULL)
+		free(primes_array);
+
+	return status;
+}
+
+char* build_primes_string(char* primes_string, int primes_string_length, int  number, int* primes_array, int primes_amount)
+{
+	
+	snprintf(primes_string, primes_string_length, HEADER_PRIMES_STRING, number);
+
+	if (primes_amount == 0) 
+		return primes_string;
+
+	snprintf(primes_string, primes_string_length, "%s %d", primes_string, primes_array[0]);
+
+	for (int i = 1; i < primes_amount; i++)
+		snprintf(primes_string, primes_string_length, "%s, %d", primes_string, primes_array[i]);
+
+	return primes_string; 
+	
+}
+
+///
 /// inputs:  
 /// outputs: 
 /// summary:  
@@ -44,7 +104,8 @@ error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount)
 
 	number = get_primes_with_duplicates(number, 2, primes_array, &primes_amount);
 
-	for (int i = 3; i < sqrt(number); i += 2)
+	
+	for (int i = 3; i < (int)sqrt(number) + 1; i += 2)
 		number = get_primes_with_duplicates(number, i, primes_array, &primes_amount);
 	
 	if (number > 2)
@@ -59,7 +120,7 @@ error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount)
 	return status;
 }
 
-/// 
+///
 /// inputs:  
 /// outputs: 
 /// summary:  
@@ -73,79 +134,34 @@ int get_primes_with_duplicates(int number, int potential_prime, int* primes_arra
 	}
 	return number;
 }
-//
-///// char_cipher_execute
-///// inputs:  to_decrypt , input_char_type , input_char, key
-///// outputs: new_char 
-///// summary: char after encrypting / decrypting 
-//char char_cipher_execute(bool to_decrypt, char_type input_char_type, char input_char, int key)
-//{
-//	char new_char; 
-//	int cipher_mul = to_decrypt? DECRYPTION_MUL : ENCRYPTION_MUL;
-//	
-//	cipher_info current_cipher = get_cipher_info(input_char_type);
-//
-//	new_char = current_cipher.ref_char 
-//		+ calc_modulo((input_char - current_cipher.ref_char + cipher_mul * key), current_cipher.modulo_num);
-//
-//	return new_char;
-//
-//}
-//
-///// calc_modulo
-///// inputs:  divident , divisor
-///// outputs: divident % divisor
-///// summary: return the modulo of divident , divisor
-//int calc_modulo(int divident, int divisor) 
-//{
-//	while (divident < 0)
-//		divident += divisor;
-//	return (divident % divisor); 
-//}
-//
-///// get_cipher_info
-///// inputs:  input_char_type
-///// outputs: cipher_info  ( UPPERCASE_CIPHER , LOWERCASE_CIPHER , DIGIT_CIPHER )
-///// summary: checks if the char_type is a small uppercase letter or digit and returns output accordingly 
-//cipher_info get_cipher_info(char_type input_char_type)
-//{
-//	switch (input_char_type) {
-//	case UPPERCASE:
-//		return UPPERCASE_CIPHER;
-//
-//	case LOWERCASE:
-//		return LOWERCASE_CIPHER;
-//
-//	case DIGIT:
-//		return DIGIT_CIPHER ;
-//	}
-//}
-//
-///// classify_char
-///// inputs:  input_char
-///// outputs: char_type  ( UPPERCASE , LOWERCASE , DIGIT , CHAR_TO_IGNORE)
-///// summary: checks if the character is a small uppercase letter or digit and returns output accordingly 
-//char_type classify_char(char input_char)
-//{
-//
-//	if (is_char_in_range(input_char, 'A','Z'))
-//		return UPPERCASE;
-//
-//	if (is_char_in_range(input_char, 'a', 'z'))
-//		return LOWERCASE;
-//
-//	if (is_char_in_range(input_char, '0', '9'))
-//		return DIGIT;
-//
-//	return CHAR_TO_IGNORE;
-//
-//}
-//
-///// is_char_in_range
-///// inputs:  my_char ,  range_start , range_end
-///// outputs: bool 
-///// summary:  check if my_char is in range [range_start - range_end]
-//bool is_char_in_range(char my_char, char range_start, char range_end)
-//{
-//	return (my_char >= range_start && my_char <= range_end);
-//}
+
+///
+/// inputs:  
+/// outputs: 
+/// summary:  
+int calc_primes_string_len(int number, int* primes_array, int primes_amount)
+{
+	int index;
+	int primes_string_length = strlen(HEADER_PRIMES_STRING) + get_number_len(number);
+
+	for (index = 0; index < primes_amount; index++)
+		primes_string_length += get_number_len(primes_array[index]);
+
+	primes_string_length += 2 * primes_amount - 1;
+
+	return primes_string_length;
+}
+
+/// inputs:  
+/// outputs: 
+/// summary:  
+int get_number_len(int number)
+{
+	int len = 0;
+	while (number != 0)
+	{
+		number = number / 10;
+		len++;
+	}
+ 	return len;
+}

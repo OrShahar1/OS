@@ -11,6 +11,6 @@
 /// inputs:  
 /// outputs: 
 /// summary: 
-error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount); 
+error_code_t get_primes_string(int number, char** p_primes_string);
 
 #endif // PRIMES_HANDLER_H 

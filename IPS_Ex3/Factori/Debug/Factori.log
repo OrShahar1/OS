@@ -1,20 +1,3 @@
-﻿  main.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(49,38): warning C4030: first formal parameter list longer than the second list
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(65,32): warning C4020: 'check_args_num': too many actual parameters
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(71,39): warning C4047: 'function': 'char *' differs in levels of indirection from 'char **'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(71,28): warning C4024: 'parse_data_from_cmd': different types for formal and actual parameter 2
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(71,57): warning C4047: 'function': 'char *' differs in levels of indirection from 'char **'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(71,41): warning C4024: 'parse_data_from_cmd': different types for formal and actual parameter 3
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(74,53): warning C4047: 'function': 'char *' differs in levels of indirection from 'int'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(74,44): warning C4024: 'check_if_valid_args': different types for formal and actual parameter 2
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(85,30): warning C4013: 'fill_priority_queue' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(105,23): warning C4018: '<': signed/unsigned mismatch
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(162,61): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(162,41): warning C4024: 'close_handle': different types for formal and actual parameter 2
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(172,51): warning C4028: formal parameter 2 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(172,70): warning C4028: formal parameter 3 different from declaration
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(185,55): warning C4028: formal parameter 2 different from declaration
-  primes_handler.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\primes_handler.c(38,62): warning C4244: 'function': conversion from 'double' to 'size_t', possible loss of data
-  Generating Code...
+﻿  primes_handler.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\primes_handler.c(97,62): warning C4244: 'function': conversion from 'double' to 'size_t', possible loss of data
   Factori.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Debug\Factori.exe

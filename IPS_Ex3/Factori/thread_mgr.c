@@ -100,9 +100,10 @@
 //
 //    //wait for all threads to return 
 //    wait_code = WaitForMultipleObjects(threads_num, thread_handles, TRUE, WAIT_FOR_THREADS_TIME); 
-//
+//	  //wait_code = WaitForMultipleObjects(threads_num, thread_handles, wait_all, wait_time);
 //    // make sure there was no wait timeout, if there was terminate threads and return error code
 //    status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num);
+//    //status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num, brutal_termination_code, source_file, source_line, source_func_name);
 //
 //    if (status != SUCCESS_CODE)
 //        return status;

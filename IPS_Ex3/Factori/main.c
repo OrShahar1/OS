@@ -88,11 +88,22 @@ int main(int argc, char* argv[])
 		goto exit_main;
 
 
-	//---------------------------
 
+	// ----------------------------------------------
 	int* primes = NULL;
-	int primes_amount = 0; 
-	int number = 125135426;
+	int primes_amount = 0;
+	int number = 5*9*1*2*4*8*7*12*3*3*5;
+	char* primes_string = NULL;
+
+	status = get_primes_string(number, &primes_string);
+
+	printf(primes_string);
+
+
+	// The prime factors of 125135426 are: 2, 2, 13, 163, 295
+	// The prime factors of 8 are: 2, 2, 2,
+
+	//---------------------------
 
 	status = get_primes(number, &primes, &primes_amount);
 

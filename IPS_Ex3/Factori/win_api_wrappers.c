@@ -7,7 +7,6 @@
 #include "win_api_wrappers.h"
 // constants ------------------------------------------------------------------
 
-#define CHAR_BUFFER_SIZE 1;
 // functions declarations -----------------------------------------------------
 
 error_code_t get_line_length(HANDLE file, int* p_line_length);
@@ -158,22 +157,6 @@ error_code_t wait_for_single_object(HANDLE object_handle, DWORD wait_time,
     return status;
 }
 
-error_code_t wait_for_multiple_threads(DWORD threads_num,  HANDLE* thread_handles, BOOL wait_all, DWORD wait_time, DWORD brutal_termination_code,
-                                       const char* source_file, int source_line, const char* source_func_name)
-{
-    error_code_t status = SUCCESS_CODE;
-    DWORD wait_code;
-
-    //wait for objects  
-    wait_code = WaitForMultipleObjects(threads_num, thread_handles, wait_all, wait_time);
-
-    // make sure there was no wait timeout, if there was terminate threads and return error code
-    status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num, brutal_termination_code,
-                                                   source_file, source_line, source_func_name); 
-
-    return status; 
-
-}
 
 /// check_wait_code_and_terminate_threads
 /// inputs:  wait_code , thread_handles , threads_num
@@ -282,6 +265,7 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int *p_line_length)
 {
     error_code_t status = SUCCESS_CODE;
     DWORD bytes_read;
+    char* line_buffer = NULL; 
     int line_length;
 
     status = get_line_length(file, &line_length);
@@ -289,16 +273,18 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int *p_line_length)
     if (status != SUCCESS_CODE)
         return status;
 
-     *p_line_buffer = (char*)realloc( *p_line_buffer, (line_length + 1) * sizeof(char));
+     line_buffer = (char*)realloc(*p_line_buffer, (line_length + 1) * sizeof(char));
 
-    status = check_mem_alloc(*p_line_buffer, __FILE__, __LINE__, __func__);
+    status = check_mem_alloc(line_buffer, __FILE__, __LINE__, __func__);
 
     if (status != SUCCESS_CODE)
         return status;
 
-    status = read_file(file, *p_line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
+    status = read_file(file, line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
 
-    (*p_line_buffer)[line_length] = '\0';
+    line_buffer[line_length] = '\0';
+
+    *p_line_buffer = line_buffer; 
     *p_line_length = line_length; 
 
     return status;
