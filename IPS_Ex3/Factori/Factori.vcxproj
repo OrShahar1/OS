@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="primes_handler.c" />
-    <ClCompile Include="cipher_thread.c" />
+    <ClCompile Include="factorization_thread.c" />
     <ClCompile Include="error_mgr.c" />
     <ClCompile Include="helpers.c" />
     <ClCompile Include="init_cipher_thread_input.c" />
@@ -151,7 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="primes_handler.h" />
-    <ClInclude Include="cipher_thread.h" />
+    <ClInclude Include="factorization_thread.h" />
     <ClInclude Include="error_mgr.h" />
     <ClInclude Include="helpers.h" />
     <ClInclude Include="init_cipher_thread_input.h" />

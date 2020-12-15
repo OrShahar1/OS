@@ -2,13 +2,15 @@
 #ifndef THREAD_MGR_H
 #define THREAD_MGR_H
 
-/// cipher_thread_manager
-/// inputs:  threads_num , to_decrypt , key , input_path , output_path
-/// outputs: error code  
+// include headers ------------------------------------------------------------
+#include "Queue.h"
+#include "error_mgr.h"
+/// 
+/// inputs:  
+/// outputs: error_code  
 /// summary: cread thread HANDLEs and schedule them together using semaphore
 ///          if an error occures -> relase resources
-//error_code_t cipher_thread_manager(int threads_num, 
-//	bool to_decrypt, int key, const char* input_path, const char* output_path); 
+error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue) // +lock
 
 
 #endif // THREAD_MGR_H

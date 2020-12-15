@@ -64,13 +64,13 @@ error_code_t read_file(HANDLE file, char *line, int bytes_to_read ,DWORD* p_byte
     return status;
 }
 
-error_code_t write_file(HANDLE file, char* line, int bytes_to_read, DWORD* p_bytes_read,
+error_code_t write_file(HANDLE file, char* line, int bytes_to_write, DWORD* p_bytes_written,
                         const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
     BOOL return_code;
 
-    return_code = WriteFile(file, line, bytes_to_read, p_bytes_read, NULL);
+    return_code = WriteFile(file, line, bytes_to_write, p_bytes_written, NULL);
 
     if (return_code == FALSE)
     {
@@ -257,15 +257,34 @@ error_code_t close_handle(HANDLE object_handle, int invalid_handle_value,
 }
 
 
+/// append_line_to_line
+/// inputs:  
+/// outputs: error_code  
+/// summary: 
+error_code_t append_line_to_line(HANDLE file, char* line)
+{
+    error_code_t status = SUCCESS_CODE;
+    DWORD bytes_written; 
+
+    status = set_file_pointer(file, 0, FILE_END, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    status = write_file(file, line, strlen(line), &bytes_written, __FILE__, __LINE__, __func__);
+
+    return status;
+}
+
 /// get_lines_number_in_file
-/// inputs:  input_file ,  lines_amount 
-/// outputs: error code 
-/// summary: fills lines_amount with the number of lines in file
-error_code_t read_line(HANDLE file, char** p_line_buffer, int *p_line_length)
+/// inputs:  
+/// outputs:
+/// summary: 
+error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
 {
     error_code_t status = SUCCESS_CODE;
     DWORD bytes_read;
-    char* line_buffer = NULL; 
+    char* line_buffer = NULL;
     int line_length;
 
     status = get_line_length(file, &line_length);
@@ -273,7 +292,7 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int *p_line_length)
     if (status != SUCCESS_CODE)
         return status;
 
-     line_buffer = (char*)realloc(*p_line_buffer, (line_length + 1) * sizeof(char));
+    line_buffer = (char*)realloc(*p_line_buffer, (line_length + 1) * sizeof(char));
 
     status = check_mem_alloc(line_buffer, __FILE__, __LINE__, __func__);
 
@@ -284,8 +303,8 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int *p_line_length)
 
     line_buffer[line_length] = '\0';
 
-    *p_line_buffer = line_buffer; 
-    *p_line_length = line_length; 
+    *p_line_buffer = line_buffer;
+    *p_line_length = line_length;
 
     return status;
 }

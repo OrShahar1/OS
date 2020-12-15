@@ -1,145 +1,192 @@
-//#pragma warning( disable:4013 )
-//#pragma warning( disable:4101 )
-//#pragma warning( disable:6258 )
-//
-//// include headers --------------------------------------
-//
-//#include <stdio.h>
-//#include <windows.h>
-//#include <tchar.h>
-//#include <stdlib.h>
-//#include <stdbool.h>
-//#include "error_mgr.h"
-//#include "cipher_thread.h"
-//#include "init_cipher_thread_input.h"
-//
-////  constants -----------------------------------------------------------------
-//
-//static const int WAIT_FOR_THREADS_TIME = 5000;
-//static const int BRUTAL_TERMINATION_CODE = -1; 
-//
-//// function declarations ------------------------------------------------------
-//
-//error_code_t create_threads_and_wait(HANDLE* thread_handles, cipher_thread_input* thread_inputs, int threads_num, HANDLE thread_start_semaphore); 
-//error_code_t create_thread(LPTHREAD_START_ROUTINE StartAddress, LPVOID ParameterPtr, LPDWORD ThreadIdPtr, HANDLE* p_thread_handle); 
-//error_code_t check_wait_for_objects_result(DWORD wait_result, HANDLE* thread_handles, int threads_num); 
-//error_code_t terminate_threads(HANDLE* thread_handles, int threads_num);
-//error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num);
-//error_code_t open_empty_output_file(const char* output_path, int file_size); 
-//void free_threads_resources(HANDLE* thread_handles, HANDLE thread_start_semaphore, cipher_thread_input* thread_inputs, int threads_num);
-//
-//// function implementations ------------------------------------------------------
-//
-///// cipher_thread_manager
-///// inputs:  threads_num , to_decrypt , key , input_path , output_path
-///// outputs: error code  
-///// summary: initialize threads inputs , create threads handles and 
-/////          make them run together using semaphore 
-//error_code_t cipher_thread_manager(int threads_num, bool to_decrypt, int key, const char* input_path, const char* output_path)
-//{
-//    error_code_t status = SUCCESS_CODE;
-//    cipher_thread_input* thread_inputs = NULL;
-//    
-//    HANDLE* thread_handles = NULL;
-//    HANDLE  thread_start_semaphore;
-//    thread_start_semaphore = CreateSemaphore(NULL,  0,  threads_num, NULL); 
-//
-//    thread_handles = (HANDLE*)calloc(threads_num, sizeof(HANDLE));
-//
-//    status = check_mem_alloc(thread_handles, __FILE__, __LINE__, __func__);
-//
-//    if (status != SUCCESS_CODE)
-//        goto cipher_thread_manager_exit;
-//
-//    status = initialize_thread_inputs(&thread_inputs, &thread_start_semaphore, threads_num, to_decrypt, key, input_path, output_path);
-//
-//    if (status != SUCCESS_CODE)
-//        goto cipher_thread_manager_exit;
-//
-//    status = open_empty_output_file(output_path, thread_inputs[threads_num - 1].line_block_limits.end);
-//   
-//    if (status != SUCCESS_CODE)
-//        goto cipher_thread_manager_exit;
-//    
-//    status = create_threads_and_wait(thread_handles , thread_inputs, threads_num, thread_start_semaphore);
-//
-//    if (status != SUCCESS_CODE)
-//        goto cipher_thread_manager_exit;
-//
-//cipher_thread_manager_exit:
-//
-//    free_threads_resources(thread_handles, thread_start_semaphore, thread_inputs, threads_num);
-//
-//    return status;
-//}
-//
-//
-///// create_threads_and_wait
-///// inputs:  thread_handles, thread_inputs, threads_num, thread_start_semaphore
-///// outputs: error code  
-///// summary: creates cipher threads and waits for them to return
-//error_code_t create_threads_and_wait(HANDLE* thread_handles, cipher_thread_input* thread_inputs, int threads_num, HANDLE thread_start_semaphore)
-//{
-//    error_code_t status = SUCCESS_CODE;
-//
-//    int thread_idx;
-//    DWORD  wait_code;
-//    LPVOID thread_input;
-//
-//    for (thread_idx = 0; thread_idx < threads_num; thread_idx++){
-//        thread_input = (LPVOID) & (thread_inputs[thread_idx]);
-//
-//        status = create_thread((LPTHREAD_START_ROUTINE)cipher_thread, thread_input,
-//                                    NULL, &(thread_handles[thread_idx]));
-//        if (status != SUCCESS_CODE)
-//            return status;
-//
-//    }
-//    // release semaphore to start all the threads' execution 
-//    ReleaseSemaphore(thread_start_semaphore, threads_num, NULL);
-//
-//    //wait for all threads to return 
-//    wait_code = WaitForMultipleObjects(threads_num, thread_handles, TRUE, WAIT_FOR_THREADS_TIME); 
-//	  //wait_code = WaitForMultipleObjects(threads_num, thread_handles, wait_all, wait_time);
-//    // make sure there was no wait timeout, if there was terminate threads and return error code
-//    status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num);
-//    //status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num, brutal_termination_code, source_file, source_line, source_func_name);
-//
-//    if (status != SUCCESS_CODE)
-//        return status;
-//
-//    // make sure the threads didn't return errors 
-//    status = check_threads_exit_code(thread_handles, threads_num);
-//
-//    return status;
-//}
-//
-///// free_threads_resources
-///// inputs:  thread_inputs[] ,  p_thread_start_semaphore , thread_inputs , threads_num
-///// outputs: - 
-///// summary: free all threads' resources
-//void free_threads_resources(HANDLE* thread_handles, HANDLE thread_start_semaphore, cipher_thread_input* thread_inputs, int threads_num)
-//{
-//    int thread_idx;
-//
-//    if (thread_handles != NULL)
-//    {
-//        for (thread_idx = 0; thread_idx < threads_num; thread_idx++)
-//        {
-//            if (thread_handles[thread_idx] != NULL)            
-//                CloseHandle(thread_handles[thread_idx]);
-//        }
-//        free(thread_handles);
-//    }
-//
-//    if (thread_inputs != NULL)
-//        free(thread_inputs);
-//
-//    if (thread_start_semaphore != NULL)
-//        CloseHandle(thread_start_semaphore);
-//}
-//
-//
+
+// include headers --------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <windows.h>
+#include "error_mgr.h"
+#include "factorization_thread.h"
+#include "win_api_wrappers.h"
+
+//  constants -----------------------------------------------------------------
+
+static const int BRUTAL_TERMINATION_CODE = -1; 
+static const int WAIT_FOR_THREADS_TIME = 5000;
+
+// function declarations ------------------------------------------------------
+
+error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num); 
+error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num);
+error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num, error_code_t current_status);
+
+
+// function implementations ------------------------------------------------------
+
+/// 
+/// inputs:  
+/// outputs: 
+/// summary: 
+error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue) // +lock
+{
+    error_code_t status = SUCCESS_CODE;
+
+    HANDLE* thread_handles = NULL;
+
+    factorization_thread_input* thread_inputs = NULL;
+
+    thread_handles = (HANDLE*)calloc(threads_num, sizeof(HANDLE));
+
+    status = check_mem_alloc(thread_handles, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        goto factorization_threads_manager_exit;
+
+    status = initialize_thread_inputs(&thread_inputs, threads_num, tasks_path, priorities_queue); // +lock
+
+    if (status != SUCCESS_CODE)
+        goto factorization_threads_manager_exit;
+    
+    status = create_threads_and_wait(thread_handles , thread_inputs, threads_num); 
+
+    if (status != SUCCESS_CODE)
+        goto factorization_threads_manager_exit;
+
+factorization_threads_manager_exit:
+
+    status = free_threads_resources(thread_handles, thread_inputs, threads_num, status);
+
+    return status;
+}
+
+
+
+/// initialize_thread_inputs
+/// inputs:   
+/// outputs: error_code 
+/// summary: initialize thread_inputs structs & fields of each thread
+error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_inputs[], int threads_num,
+    const char* tasks_path, queue* priorities_queue) //+lock
+{
+    error_code_t status = SUCCESS_CODE;
+    factorization_thread_input* thread_inputs = NULL;
+    int thread_index;
+
+    // create thread_inputs array that holds all threads' input structs 
+    thread_inputs = (factorization_thread_input*)malloc(threads_num * sizeof(factorization_thread_input));
+
+    // if malloc failed return with error
+    status = check_mem_alloc(thread_inputs, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    // initialize the thread_inputs fields 
+    for (thread_index = 0; thread_index < threads_num; thread_index++)
+    {
+        thread_inputs[thread_index].tasks_path = tasks_path;
+        thread_inputs[thread_index].priorities_queue = priorities_queue;
+    }
+
+    *p_thread_inputs = thread_inputs;
+
+    return status;
+}
+
+
+
+/// create_threads_and_wait
+/// inputs:  thread_handles, thread_inputs, threads_num
+/// outputs: error code  
+/// summary: creates cipher threads and waits for them to return
+error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num)
+{
+    error_code_t status = SUCCESS_CODE;
+
+    LPVOID thread_input;
+    int thread_index;
+    DWORD  wait_code;
+
+    for (thread_index = 0; thread_index < threads_num; thread_index++){
+        thread_input = (LPVOID) & (thread_inputs[thread_index]);
+
+        status = create_thread((LPTHREAD_START_ROUTINE)factorization_thread, thread_input,
+                                    NULL, &(thread_handles[thread_index]));
+        if (status != SUCCESS_CODE)
+            return status;
+
+    }
+
+    //wait for all threads to return 
+    wait_code = WaitForMultipleObjects(threads_num, thread_handles, TRUE, WAIT_FOR_THREADS_TIME); 
+
+    // make sure there was no wait timeout, if there was terminate threads and return error code
+    status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num, BRUTAL_TERMINATION_CODE, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    // make sure the threads didn't return errors 
+    status = check_threads_exit_code(thread_handles, threads_num);
+
+    return status;
+}
+
+
+/// check_threads_exit_code
+/// inputs:  thread_handles ,  threads_num
+/// outputs: error code  
+/// summary: checks if threads exit codes were SUCCESS_CODE, if not --> return error 
+error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num)
+{
+    error_code_t status = SUCCESS_CODE; 
+
+    DWORD thread_exit_code;
+    int thread_index;
+
+    for (thread_index = 0; thread_index < threads_num; thread_index++)
+    {
+        status = get_exit_code_thread(thread_handles[thread_index], &thread_exit_code, __FILE__, __LINE__, __func__);
+
+        if (status != SUCCESS_CODE)
+             return status;
+        
+        if (thread_exit_code != SUCCESS_CODE)
+            return thread_exit_code;
+    }
+
+    return SUCCESS_CODE;
+}
+
+/// free_threads_resources
+/// inputs:  thread_inputs[] ,  p_thread_start_semaphore , thread_inputs , threads_num
+/// outputs: - 
+/// summary: free all threads' resources
+error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num, error_code_t current_status)
+{
+    error_code_t status = SUCCESS_CODE; 
+    int thread_idx;
+
+    if (thread_handles != NULL)
+    {
+        for (thread_idx = 0; thread_idx < threads_num; thread_idx++) 
+        {
+            status = close_handle(thread_handles[thread_idx], NULL, __FILE__, __LINE__, __func__);
+
+            if (status != SUCCESS_CODE)
+                current_status = status;
+        }
+        
+        free(thread_handles);
+    }
+
+    if (thread_inputs != NULL)
+        free(thread_inputs);
+
+    return current_status;
+}
+
+
 ////---------------------------------------------------------------------------------
 ////---------------------------------------------------------------------------------
 //

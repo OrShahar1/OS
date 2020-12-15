@@ -56,10 +56,9 @@ error_code_t get_primes_string(int number, char** p_primes_string)
 
 	snprintf(primes_string, primes_string_length, "%s\r\n", primes_string);
 	
-	printf("### %d - %d ###\n", primes_string_length, strlen(primes_string));
+	*p_primes_string = primes_string;
 
 get_primes_string_exit:
-	*p_primes_string = primes_string;
 	if (primes_array != NULL)
 		free(primes_array);
 

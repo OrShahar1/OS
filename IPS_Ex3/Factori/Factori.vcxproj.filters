@@ -24,9 +24,6 @@
     <ClCompile Include="thread_mgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cipher_thread.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="error_mgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,11 +39,11 @@
     <ClCompile Include="primes_handler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="factorization_thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cipher_thread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="error_mgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -66,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="primes_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="factorization_thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

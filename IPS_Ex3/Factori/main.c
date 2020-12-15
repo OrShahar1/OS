@@ -4,10 +4,7 @@
 -----------------------------------------------------
 
 * check if we should continue thread termination if get_exit_code_thread fails
-
-
-
-
+//#pragma warning( disable:4047 )
 
 
 
@@ -23,6 +20,7 @@
 #include "error_mgr.h"
 #include "Queue.h" 
 #include "primes_handler.h" 
+#include "factorization_thread.h"
 
 //#include "thread_mgr.h"
 #include <math.h>
@@ -45,7 +43,6 @@ static const int MAXIMUM_THREAD_NUM = 64;
 // functions declarations  ----------------------------------------------
 
 void parse_data_from_cmd(char* cmd_data[], char* tasks_path, char* priority_path, int* threads_number, int* tasks_number);
-error_code_t set_file_paths(char** p_input_path, char** p_output_path, char* input_path_main_arg, bool to_decrypt); 
 error_code_t check_args_num(int argc); 
 void free_main_resources(queue* my_queue);
 error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag);
@@ -59,7 +56,7 @@ int main(int argc, char* argv[])
 	char* priorities_path = NULL;
 	int tasks_num, threads_num;
 
-	queue* priority_queue = NULL;
+	queue* priorities_queue = NULL;
 
 	// make sure that we got the anticipated number of arguments
 	status = check_args_num(argc, ARGS_NUM);
@@ -77,18 +74,23 @@ int main(int argc, char* argv[])
 		goto exit_main;
 
 	// initialize and fill priority queue
-	status = InitializeQueue(&priority_queue);
+	status = InitializeQueue(&priorities_queue);
 
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
-	status = fill_priority_queue(priority_queue, priorities_path);
+	status = fill_priority_queue(priorities_queue, priorities_path);
 
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
+	// call factorization_thread_manager to create threads and perform the tasks 
+	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue); // +lock
+	
+	if (status != SUCCESS_CODE)
+		goto exit_main;
 
-
+	/*
 	// ----------------------------------------------
 	int* primes = NULL;
 	int primes_amount = 0;
@@ -125,14 +127,14 @@ int main(int argc, char* argv[])
 	//---------------------------
 
 	printf("%s\n%s\n%d %d\n\n", tasks_path, priorities_path, tasks_num, threads_num);
-	print_queue(priority_queue); 
+	print_queue(priorities_queue);
 
 	//---------------------------
-	//// call cipher_thread_manager to create threads and encrypt / decrypt file 
-	//status = cipher_thread_manager(number_of_threads, to_decrypt, key, input_path, output_path);
+	*/
+	
 	
 exit_main:
-	free_main_resources(priority_queue);
+	free_main_resources(priorities_queue);
 	return (int)status;
 }
 
