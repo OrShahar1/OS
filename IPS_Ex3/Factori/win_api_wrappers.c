@@ -221,17 +221,67 @@ error_code_t terminate_thread(HANDLE thread_handle, DWORD brutal_termination_cod
     return status;
 }
 
-error_code_t create_semaphore(HANDLE* p_semaphore_handle, int max_value, 
+error_code_t create_semaphore(HANDLE* p_semaphore_handle, int initial_value, int max_value, 
                               const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
 
-    *p_semaphore_handle = CreateSemaphore(NULL, 0, max_value, NULL);
+    *p_semaphore_handle = CreateSemaphore(NULL, initial_value, max_value, NULL);
 
     if (*p_semaphore_handle == NULL)
     {
         print_error(MSG_ERR_SEMAPHORE_CREATION_FAILED, source_file, source_line, source_func_name);
         status = SEMAPHORE_CREATION_FAILED;
+    }
+
+    return status;
+}
+
+error_code_t create_mutex(HANDLE* p_mutex_handle,
+                          const char* source_file, int source_line, const char* source_func_name)
+{
+    error_code_t status = SUCCESS_CODE;
+
+    *p_mutex_handle = CreateMutex(NULL, FALSE, NULL);     
+    
+    if (*p_mutex_handle == NULL)
+    {
+        print_error(MSG_ERR_MUTEX_CREATION_FAILED, source_file, source_line, source_func_name);
+        status = MUTEX_CREATION_FAILED;
+    }
+
+    return status;
+}
+
+error_code_t release_samaphore(HANDLE semaphore, int up_amount,
+                              const char* source_file, int source_line, const char* source_func_name)
+{
+    error_code_t status = SUCCESS_CODE;
+    BOOL return_code;
+
+    return_code = ReleaseSemaphore(semaphore, up_amount, NULL);
+
+    if (return_code == FALSE)
+    {
+        print_error(MSG_ERR_THREADS_TERMINATION_FAILED, source_file, source_line, source_func_name);
+        status = THREADS_TERMINATION_FAILED;
+    }
+
+    return status; 
+}
+
+error_code_t release_mutex(HANDLE mutex,
+                           const char* source_file, int source_line, const char* source_func_name)
+{
+    error_code_t status = SUCCESS_CODE;
+    BOOL return_code;
+
+    return_code = ReleaseMutex(mutex);
+
+    if (return_code == FALSE)
+    {
+        print_error(MSG_ERR_THREADS_TERMINATION_FAILED, source_file, source_line, source_func_name);
+        status = THREADS_TERMINATION_FAILED;
     }
 
     return status;
@@ -344,3 +394,4 @@ error_code_t get_line_length(HANDLE file, int* p_line_length)
 
     return status;
 }
+

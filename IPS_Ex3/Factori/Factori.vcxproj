@@ -143,7 +143,7 @@
     <ClCompile Include="factorization_thread.c" />
     <ClCompile Include="error_mgr.c" />
     <ClCompile Include="helpers.c" />
-    <ClCompile Include="init_cipher_thread_input.c" />
+    <ClCompile Include="Lock.c" />
     <ClCompile Include="Queue.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="thread_mgr.c" />
@@ -154,7 +154,7 @@
     <ClInclude Include="factorization_thread.h" />
     <ClInclude Include="error_mgr.h" />
     <ClInclude Include="helpers.h" />
-    <ClInclude Include="init_cipher_thread_input.h" />
+    <ClInclude Include="Lock.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="thread_mgr.h" />
     <ClInclude Include="win_api_wrappers.h" />

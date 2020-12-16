@@ -19,7 +19,8 @@ typedef enum {
     SEMAPHORE_CREATION_FAILED,
     OBJECT_WAIT_TIMEOUT,
     SET_END_OF_FILE_FAILED,
-    CLOSE_HANDLE_FAILED
+    CLOSE_HANDLE_FAILED,
+    MUTEX_CREATION_FAILED
 } error_code_t;
 
 // constants ----------------------------------------------------------------------
@@ -44,6 +45,7 @@ extern const char* MSG_ERR_SEMAPHORE_CREATION_FAILED;
 extern const char* MSG_ERR_OBJECT_WAIT_TIMEOUT;
 extern const char* MSG_ERR_SET_END_OF_FILE_FAILED;
 extern const char* MSG_ERR_CLOSE_HANDLE_FAILED;
+extern const char* MSG_ERR_MUTEX_CREATION_FAILED;
 // function declarations ------------------------------------------------------
 
 /// print_error
@@ -64,4 +66,10 @@ error_code_t check_mem_alloc(void* ptr, const char* file, int line, const char* 
 /// summary: checks if argc == 5 ( correct number of inputs ) 
 error_code_t check_args_num(int argc, int anticipated_args_num);
 
-#endif 
+/// check_if_valid_args
+/// inputs:  threads_num ,  tasks_num, maximum_threads_num
+/// outputs: error_code 
+/// summary: check validation of threads_num and tasks_num( greater than 0 )  		 
+error_code_t check_if_valid_args(int threads_num, int tasks_num, int maximum_threads_num); 
+
+#endif // ERROR_MGR_H

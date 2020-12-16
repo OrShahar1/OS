@@ -16,11 +16,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include "win_api_wrappers.h"
+
+#include "thread_mgr.h"
 #include "error_mgr.h"
 #include "Queue.h" 
-#include "primes_handler.h" 
-#include "factorization_thread.h"
+#include "Lock.h" 
+
 
 //#include "thread_mgr.h"
 #include <math.h>
@@ -42,10 +43,9 @@ static const int MAXIMUM_THREAD_NUM = 64;
 
 // functions declarations  ----------------------------------------------
 
-void parse_data_from_cmd(char* cmd_data[], char* tasks_path, char* priority_path, int* threads_number, int* tasks_number);
-error_code_t check_args_num(int argc); 
-void free_main_resources(queue* my_queue);
-error_code_t check_if_valid_args(int number_of_threads, char* encrypt_or_decrypt_flag);
+error_code_t fill_priority_queue(queue* my_queue, char* priorities_path);
+void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_path, int* tasks_number, int* threads_number);
+error_code_t free_main_resources(queue** p_my_queue, lock** p_my_lock, error_code_t current_status); 
 
 
 int main(int argc, char* argv[])
@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
 	int tasks_num, threads_num;
 
 	queue* priorities_queue = NULL;
+	lock* resources_lock = NULL;
 
 	// make sure that we got the anticipated number of arguments
 	status = check_args_num(argc, ARGS_NUM);
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
 	parse_data_from_cmd(argv, &tasks_path, &priorities_path, &tasks_num, &threads_num);
 
 	// check if input args are valid: thread num > 0  && tasks_num > 0
-	status = check_if_valid_args(threads_num, tasks_num);
+	status = check_if_valid_args(threads_num, tasks_num, MAXIMUM_THREAD_NUM);
 
 	if (status != SUCCESS_CODE)
 		goto exit_main;
@@ -84,8 +85,15 @@ int main(int argc, char* argv[])
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
+	// initialize and fill priority queue
+	status = InitializeLock(&resources_lock);
+
+	if (status != SUCCESS_CODE)
+		goto exit_main;
+
+
 	// call factorization_thread_manager to create threads and perform the tasks 
-	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue); // +lock
+	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue, resources_lock); // +lock
 	
 	if (status != SUCCESS_CODE)
 		goto exit_main;
@@ -134,7 +142,7 @@ int main(int argc, char* argv[])
 	
 	
 exit_main:
-	free_main_resources(priorities_queue);
+	status = free_main_resources(&priorities_queue, &resources_lock, status);
 	return (int)status;
 }
 
@@ -191,34 +199,26 @@ void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_pa
 	*tasks_number   = atoi(cmd_data[TASKS_NUMBER_INDEX]);
 }
 
-/// check_if_valid_args
-/// inputs:  threads_num ,  tasks_num
-/// outputs: error code 
-/// summary: check validation of threads_num and tasks_num( greater than 0 )  		 
-error_code_t check_if_valid_args(int threads_num, int tasks_num)
-{
-	if ((threads_num <= 0 || threads_num > MAXIMUM_THREAD_NUM) || tasks_num < 0)
-	{
-		print_error(MSG_ERR_NOT_VALID_ARGS, __FILE__, __LINE__, __func__);
-		return NOT_VALID_ARGS;
-	}
-	return SUCCESS_CODE;
-}
 
 
 /// free_main_resources
-/// inputs:  input_path ,  output_path
-/// outputs: none, void function 
-/// summary:  free all main resources ( input_path , output_path ) 
-void free_main_resources(queue* my_queue)  //char* input_path, char* output_path)
+/// inputs:  
+/// outputs: 
+/// summary:  free all main resources  
+error_code_t free_main_resources(queue** p_my_queue, lock** p_my_lock, error_code_t current_status)
 {
-	//if (input_path != NULL)
-	//	free(input_path);
+	error_code_t status = SUCCESS_CODE;
 
-	//if (output_path != NULL)
-	//	free(output_path);
-	if (my_queue != NULL)
-		DestroyQueue(&my_queue);
+	if (*p_my_lock != NULL)
+		status = DestroyLock(p_my_lock);
+
+	if (*p_my_queue != NULL)
+		DestroyQueue(p_my_queue);
+
+	if (status != SUCCESS_CODE)
+		current_status = status;
+
+	return current_status; 
 }
 
 

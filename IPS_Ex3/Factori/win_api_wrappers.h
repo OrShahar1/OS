@@ -30,4 +30,10 @@ error_code_t create_thread(LPTHREAD_START_ROUTINE StartAddress, LPVOID Parameter
 error_code_t close_handle(HANDLE object_handle, int invalid_handle_value, const char* source_file, int source_line, const char* source_func_name); 
 
 error_code_t check_wait_code_and_terminate_threads(DWORD wait_code, HANDLE* thread_handles, int threads_num, DWORD brutal_termination_code, const char* source_file, int source_line, const char* source_func_name);
+
+// threads synchronization  
+error_code_t create_semaphore(HANDLE* p_semaphore_handle, int initial_value,  int max_value, const char* source_file, int source_line, const char* source_func_name);
+
+error_code_t create_mutex(HANDLE* p_mutex_handle, const char* source_file, int source_line, const char* source_func_name);
+
 #endif // WIN_API_WRAPPERS 

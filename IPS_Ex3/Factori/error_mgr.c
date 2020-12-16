@@ -24,6 +24,7 @@ const char* MSG_ERR_SEMAPHORE_CREATION_FAILED      = "Creating semaphore failed.
 const char* MSG_ERR_OBJECT_WAIT_TIMEOUT            = "Timeout while waiting for semaphore to be released"; 
 const char* MSG_ERR_SET_END_OF_FILE_FAILED         = "Set End of File failed."; 
 const char* MSG_ERR_CLOSE_HANDLE_FAILED            = "CloseHandle Failed"; 
+const char* MSG_ERR_MUTEX_CREATION_FAILED          = "Creating mutex failed.";  
 
 // functions implementations  ----------------------------------------------------
 
@@ -40,7 +41,7 @@ void print_error(const char* msg, const char* file, int line, const char* func_n
 
 /// check_mem_alloc
 /// inputs:  ptr , file, line and function name where the error happended
-/// outputs: error code
+/// outputs: error_code
 /// summary: check ptr allocation & return to appropriate status 
 error_code_t check_mem_alloc(void* ptr, const char* file, int line, const char* func_name)
 {
@@ -54,7 +55,7 @@ error_code_t check_mem_alloc(void* ptr, const char* file, int line, const char* 
 
 /// check_args_num
 /// inputs:  argc 
-/// outputs: error code 
+/// outputs: error_code 
 /// summary: checks if argc == 5 ( correct number of inputs ) 
 error_code_t check_args_num(int argc, int anticipated_args_num)
 {
@@ -63,4 +64,18 @@ error_code_t check_args_num(int argc, int anticipated_args_num)
 
     print_error(MSG_ERR_NUM_ARGS, __FILE__, __LINE__, __func__);
     return ARGS_NUM_ERROR;
+}
+
+/// check_if_valid_args
+/// inputs:  threads_num ,  tasks_num, maximum_threads_num
+/// outputs: error_code 
+/// summary: check validation of threads_num and tasks_num( greater than 0 )  		 
+error_code_t check_if_valid_args(int threads_num, int tasks_num, const int maximum_threads_num)
+{
+    if ((threads_num <= 0 || threads_num > maximum_threads_num) || tasks_num < 0)
+    {
+        print_error(MSG_ERR_NOT_VALID_ARGS, __FILE__, __LINE__, __func__);
+        return NOT_VALID_ARGS;
+    }
+    return SUCCESS_CODE;
 }

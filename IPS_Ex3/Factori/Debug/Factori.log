@@ -1,7 +1,59 @@
-﻿  factorization_thread.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(36,61): warning C4090: 'function': different 'const' qualifiers
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(42,42): warning C4013: 'thread_factorization_execute' undefined; assuming extern returning int
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(44,26): warning C4102: 'factorization_thread_exit': unreferenced label
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(111,66): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(111,46): warning C4024: 'close_handle': different types for formal and actual parameter 2
-  Factori.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Debug\Factori.exe
+﻿  error_mgr.c
+  Lock.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(55,24): warning C4013: 'wait_for_single_object' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(56,15): warning C4013: 'release_mutex' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(74,20): warning C4013: 'release_semaphore' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(98,57): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(98,53): warning C4024: 'close_handle': different types for formal and actual parameter 2
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(103,58): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(103,54): warning C4024: 'close_handle': different types for formal and actual parameter 2
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(108,59): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(108,55): warning C4024: 'close_handle': different types for formal and actual parameter 2
+  main.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.h(16,7): error C2085: 'lock': not in formal parameter list
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.h(24,33): error C2143: syntax error: missing ')' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.h(24,33): error C2085: 'InitializeLock': not in formal parameter list
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.h(24,33): error C2143: syntax error: missing ';' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.h(24,45): error C2059: syntax error: ')'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,58): error C2143: syntax error: missing ')' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,58): error C2081: 'lock': name in formal parameter list illegal
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,58): error C2143: syntax error: missing '{' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,72): error C2370: 'error_code_t': redefinition; different storage class
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\error_mgr.h(24): message : see declaration of 'error_code_t'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,85): error C2146: syntax error: missing ';' before identifier 'current_status'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(48,99): error C2059: syntax error: ')'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(60,6): error C2065: 'lock': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(60,23): error C2065: 'resources_lock': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(60,29): warning C4047: '=': 'int' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(60,29): error C2106: '=': left operand must be l-value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(89,25): warning C4013: 'InitializeLock' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(89,41): error C2065: 'resources_lock': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(96,98): error C2065: 'resources_lock': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(96,84): warning C4020: 'factorization_threads_manager': too many actual parameters
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(145,30): warning C4013: 'free_main_resources' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(145,65): error C2065: 'resources_lock': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(157,20): warning C4013: 'open_file' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(162,20): warning C4013: 'read_line' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(183,23): warning C4013: 'close_handle' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,58): error C2143: syntax error: missing ')' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,58): error C2081: 'lock': name in formal parameter list illegal
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,58): error C2143: syntax error: missing '{' before '*'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,72): error C2370: 'error_code_t': redefinition; different storage class
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\error_mgr.h(24): message : see declaration of 'error_code_t'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,85): error C2146: syntax error: missing ';' before identifier 'current_status'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(208,99): error C2059: syntax error: ')'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\main.c(209,1): error C2054: expected '(' to follow 'current_status'
+  win_api_wrappers.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(34,49): warning C4028: formal parameter 2 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(34,71): warning C4028: formal parameter 3 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(34,89): warning C4028: formal parameter 4 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(36,1): warning C4029: declared formal parameter list different from definition
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(51,31): warning C4028: formal parameter 1 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(51,43): warning C4028: formal parameter 2 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(173,35): warning C4013: 'terminate_threads' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(296,46): warning C4047: '!=': 'HANDLE' differs in levels of indirection from 'int'
+  Generating Code...
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(65): warning C4716: 'read_lock': must return a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(85): warning C4716: 'write_lock': must return a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(77): warning C4716: 'read_release': must return a value
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(92): warning C4716: 'write_release': must return a value

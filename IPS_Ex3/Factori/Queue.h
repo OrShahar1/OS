@@ -1,8 +1,12 @@
 #ifndef QUEUE_H 
 #define QUEUE_H
 
+// include headers ------------------------------------------------------------
+
 #include <stdbool.h>
-#include "error_mgr.h"
+#include "error_mgr.h" 
+
+// structs --------------------------------------------------------------------
 
 typedef struct _node {
 	int data;
@@ -12,6 +16,8 @@ typedef struct _node {
 typedef struct _queue {
 	node* queue_head;
 } queue;
+
+// function declarations ------------------------------------------------------
 
 error_code_t InitializeQueue(queue** p_my_queue);
 error_code_t Push(queue* my_queue, int data);
