@@ -1,0 +1,6 @@
+12
+16
+3
+The prime factors of 12 are: 2, 2, 3
+The prime factors of 3 are: 3
+The prime factors of 16 are: 2, 2, 2, 2

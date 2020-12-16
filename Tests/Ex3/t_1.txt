@@ -1,0 +1,6 @@
+25
+6
+399
+The prime factors of 25 are: 5, 5
+The prime factors of 99 are: 3, 3, 11
+The prime factors of 6 are: 2, 3
