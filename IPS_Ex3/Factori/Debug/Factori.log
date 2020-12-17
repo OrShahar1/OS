@@ -1,1 +1,9 @@
-﻿  Factori.vcxproj -> C:\Users\User\Desktop\os\IPS_Projects\IPS_Ex3\Debug\Factori.exe
+﻿  factorization_thread.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(36,61): warning C4090: 'function': different 'const' qualifiers
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(42,42): warning C4013: 'thread_factorization_execute' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(64,46): warning C4013: 'get_task_position_from_queue' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(69,39): warning C4013: 'read_task_from_thread' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(79,46): warning C4013: 'append_primes_string_to_file' undefined; assuming extern returning int
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(183,66): warning C4047: 'function': 'int' differs in levels of indirection from 'HANDLE'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\factorization_thread.c(183,46): warning C4024: 'close_handle': different types for formal and actual parameter 2
+  Factori.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Debug\Factori.exe

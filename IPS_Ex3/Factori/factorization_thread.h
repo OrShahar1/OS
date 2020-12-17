@@ -7,14 +7,14 @@
 #include <windows.h>
 #include "error_mgr.h"
 #include "Queue.h"
+#include "Lock.h"
 
 //  structs -------------------------------------------------------------------
 
 typedef struct {
     const char* tasks_path;
     queue* priorities_queue;
-    // lock
-    // int tasks_num;
+    lock* resources_lock;
 
 } factorization_thread_input;
 

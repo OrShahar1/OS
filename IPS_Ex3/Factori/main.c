@@ -6,7 +6,8 @@
 * check if we should continue thread termination if get_exit_code_thread fails
 //#pragma warning( disable:4047 )
 
-
+// add handle array for lock (with enum)
+// check mutex and semaphore release in case of error
 
 // -----------------------------------------------------
 */
@@ -91,9 +92,8 @@ int main(int argc, char* argv[])
 	if (status != SUCCESS_CODE)
 		goto exit_main;
 
-
 	// call factorization_thread_manager to create threads and perform the tasks 
-	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue, resources_lock); // +lock
+	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue, resources_lock); 
 	
 	if (status != SUCCESS_CODE)
 		goto exit_main;
@@ -185,7 +185,6 @@ fill_priority_queue_exit:
 	return status; 
 }
 
-
 /// parse_data_from_cmd
 /// inputs:  argv (command line input) and key, number_of_threads and to_decrypt pointers 
 /// outputs: - 
@@ -210,7 +209,7 @@ error_code_t free_main_resources(queue** p_my_queue, lock** p_my_lock, error_cod
 	error_code_t status = SUCCESS_CODE;
 
 	if (*p_my_lock != NULL)
-		status = DestroyLock(p_my_lock);
+		status = DestroyLock(p_my_lock, status);
 
 	if (*p_my_queue != NULL)
 		DestroyQueue(p_my_queue);

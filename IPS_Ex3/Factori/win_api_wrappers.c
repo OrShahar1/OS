@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <windows.h>
+
 #include "error_mgr.h"
 #include "win_api_wrappers.h"
+
 // constants ------------------------------------------------------------------
 
 // functions declarations -----------------------------------------------------
@@ -12,6 +14,10 @@
 error_code_t get_line_length(HANDLE file, int* p_line_length);
 
 // functions implementations  -------------------------------------------------
+
+// ----------------------------------------------------------------------------
+//                              files api   
+// ----------------------------------------------------------------------------
 
 error_code_t open_file(HANDLE* p_file_handle, char* file_name, DWORD desired_access, DWORD share_mode, DWORD creation_disposition,
                        const char* source_file, int source_line, const char* source_func_name)
@@ -64,6 +70,75 @@ error_code_t read_file(HANDLE file, char *line, int bytes_to_read ,DWORD* p_byte
     return status;
 }
 
+/// 
+/// inputs:  
+/// outputs:
+/// summary: 
+error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
+{
+    error_code_t status = SUCCESS_CODE;
+    DWORD bytes_read;
+    char* line_buffer = NULL;
+    int line_length;
+
+    status = get_line_length(file, &line_length);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    line_buffer = (char*)realloc(*p_line_buffer, (line_length + 1) * sizeof(char));
+
+    status = check_mem_alloc(line_buffer, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    status = read_file(file, line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
+
+    line_buffer[line_length] = '\0';
+
+    *p_line_buffer = line_buffer;
+    *p_line_length = line_length;
+
+    return status;
+}
+
+error_code_t get_line_length(HANDLE file, int* p_line_length)
+{
+    error_code_t status = SUCCESS_CODE;
+
+    char char_buffer;
+    int char_counter = 0;
+
+    DWORD bytes_read;
+
+    // read char until end of line 
+    status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    while (bytes_read != 0)
+    {
+        char_counter++;
+
+        if (char_buffer == '\n')
+            break;
+
+        status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
+
+        if (status != SUCCESS_CODE)
+            return status;
+    }
+
+    //go to the beginning of the line 
+    status = set_file_pointer(file, -(char_counter), FILE_CURRENT, __FILE__, __LINE__, __func__);
+
+    *p_line_length = char_counter;
+
+    return status;
+}
+
 error_code_t write_file(HANDLE file, char* line, int bytes_to_write, DWORD* p_bytes_written,
                         const char* source_file, int source_line, const char* source_func_name)
 {
@@ -77,6 +152,25 @@ error_code_t write_file(HANDLE file, char* line, int bytes_to_write, DWORD* p_by
         print_error(MSG_ERR_FILE_WRITING_FAILED, source_file, source_line, source_func_name);
         status = FILE_WRITING_FAILED;
     }
+
+    return status;
+}
+
+/// append_line_to_line
+/// inputs:  
+/// outputs: error_code  
+/// summary: 
+error_code_t append_line_to_line(HANDLE file, char* line)
+{
+    error_code_t status = SUCCESS_CODE;
+    DWORD bytes_written;
+
+    status = set_file_pointer(file, 0, FILE_END, __FILE__, __LINE__, __func__);
+
+    if (status != SUCCESS_CODE)
+        return status;
+
+    status = write_file(file, line, strlen(line), &bytes_written, __FILE__, __LINE__, __func__);
 
     return status;
 }
@@ -97,6 +191,10 @@ error_code_t set_file_pointer(HANDLE file, int offset, int starting_position,
 
     return status;
 }
+
+// ----------------------------------------------------------------------------
+//                                 threads api   
+// ----------------------------------------------------------------------------
 
 /// create_thread
 /// inputs:  StartAddress , ParameterPtr , ThreadIdPtr , p_thread_handle
@@ -139,24 +237,6 @@ error_code_t get_exit_code_thread(HANDLE thread_handle, DWORD* p_thread_exit_cod
     }
     return status;
 }
-
-error_code_t wait_for_single_object(HANDLE object_handle, DWORD wait_time,
-                                    const char* source_file, int source_line, const char* source_func_name)
-{
-    error_code_t status = SUCCESS_CODE;
-    DWORD wait_code;
-
-    wait_code = WaitForSingleObject(object_handle, wait_time);
-
-    if (wait_code != WAIT_OBJECT_0)
-    {
-        print_error(MSG_ERR_OBJECT_WAIT_TIMEOUT, source_file, source_line, source_func_name);
-        status = OBJECT_WAIT_TIMEOUT; 
-    }
-
-    return status;
-}
-
 
 /// check_wait_code_and_terminate_threads
 /// inputs:  wait_code , thread_handles , threads_num
@@ -221,6 +301,10 @@ error_code_t terminate_thread(HANDLE thread_handle, DWORD brutal_termination_cod
     return status;
 }
 
+// ----------------------------------------------------------------------------
+//                           thread synchronization api   
+// ----------------------------------------------------------------------------
+
 error_code_t create_semaphore(HANDLE* p_semaphore_handle, int initial_value, int max_value, 
                               const char* source_file, int source_line, const char* source_func_name)
 {
@@ -253,7 +337,7 @@ error_code_t create_mutex(HANDLE* p_mutex_handle,
     return status;
 }
 
-error_code_t release_samaphore(HANDLE semaphore, int up_amount,
+error_code_t release_semaphore(HANDLE semaphore, int up_amount,
                               const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
@@ -287,6 +371,27 @@ error_code_t release_mutex(HANDLE mutex,
     return status;
 }
 
+// ----------------------------------------------------------------------------
+//                              general functions 
+// ----------------------------------------------------------------------------
+
+error_code_t wait_for_single_object(HANDLE object_handle, DWORD wait_time,
+                                    const char* source_file, int source_line, const char* source_func_name)
+{
+    error_code_t status = SUCCESS_CODE;
+    DWORD wait_code;
+
+    wait_code = WaitForSingleObject(object_handle, wait_time);
+
+    if (wait_code != WAIT_OBJECT_0)
+    {
+        print_error(MSG_ERR_OBJECT_WAIT_TIMEOUT, source_file, source_line, source_func_name);
+        status = OBJECT_WAIT_TIMEOUT;
+    }
+
+    return status;
+}
+
 error_code_t close_handle(HANDLE object_handle, int invalid_handle_value,
                           const char* source_file, int source_line, const char* source_func_name)
 {
@@ -306,92 +411,4 @@ error_code_t close_handle(HANDLE object_handle, int invalid_handle_value,
     return status;
 }
 
-
-/// append_line_to_line
-/// inputs:  
-/// outputs: error_code  
-/// summary: 
-error_code_t append_line_to_line(HANDLE file, char* line)
-{
-    error_code_t status = SUCCESS_CODE;
-    DWORD bytes_written; 
-
-    status = set_file_pointer(file, 0, FILE_END, __FILE__, __LINE__, __func__);
-
-    if (status != SUCCESS_CODE)
-        return status;
-
-    status = write_file(file, line, strlen(line), &bytes_written, __FILE__, __LINE__, __func__);
-
-    return status;
-}
-
-/// get_lines_number_in_file
-/// inputs:  
-/// outputs:
-/// summary: 
-error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
-{
-    error_code_t status = SUCCESS_CODE;
-    DWORD bytes_read;
-    char* line_buffer = NULL;
-    int line_length;
-
-    status = get_line_length(file, &line_length);
-
-    if (status != SUCCESS_CODE)
-        return status;
-
-    line_buffer = (char*)realloc(*p_line_buffer, (line_length + 1) * sizeof(char));
-
-    status = check_mem_alloc(line_buffer, __FILE__, __LINE__, __func__);
-
-    if (status != SUCCESS_CODE)
-        return status;
-
-    status = read_file(file, line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
-
-    line_buffer[line_length] = '\0';
-
-    *p_line_buffer = line_buffer;
-    *p_line_length = line_length;
-
-    return status;
-}
-
-error_code_t get_line_length(HANDLE file, int* p_line_length)
-{
-    error_code_t status = SUCCESS_CODE;
-
-    char char_buffer;
-    int char_counter = 0;
-
-    DWORD bytes_read;
-
-    // read char until end of line 
-    status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
-
-    if (status != SUCCESS_CODE)
-        return status;
-    
-    while (bytes_read != 0)
-    {
-        char_counter++;
-
-        if (char_buffer == '\n')
-            break;
-
-        status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
-
-        if (status != SUCCESS_CODE)
-            return status;
-    }
-
-    //go to the beginning of the line 
-    status = set_file_pointer(file, -(char_counter), FILE_CURRENT, __FILE__, __LINE__, __func__);
-
-    *p_line_length = char_counter;
-
-    return status;
-}
 

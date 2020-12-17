@@ -27,7 +27,7 @@ error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread
 /// inputs:  
 /// outputs: 
 /// summary: 
-error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue) // +lock
+error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue, lock* resources_lock) 
 {
     error_code_t status = SUCCESS_CODE;
 
@@ -42,7 +42,7 @@ error_code_t factorization_threads_manager(int threads_num, const char* tasks_pa
     if (status != SUCCESS_CODE)
         goto factorization_threads_manager_exit;
 
-    status = initialize_thread_inputs(&thread_inputs, threads_num, tasks_path, priorities_queue); // +lock
+    status = initialize_thread_inputs(&thread_inputs, threads_num, tasks_path, priorities_queue, resources_lock); 
 
     if (status != SUCCESS_CODE)
         goto factorization_threads_manager_exit;
@@ -66,7 +66,7 @@ factorization_threads_manager_exit:
 /// outputs: error_code 
 /// summary: initialize thread_inputs structs & fields of each thread
 error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_inputs[], int threads_num,
-    const char* tasks_path, queue* priorities_queue) //+lock
+                                      const char* tasks_path, queue* priorities_queue, lock* resources_lock) 
 {
     error_code_t status = SUCCESS_CODE;
     factorization_thread_input* thread_inputs = NULL;
@@ -86,6 +86,7 @@ error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_input
     {
         thread_inputs[thread_index].tasks_path = tasks_path;
         thread_inputs[thread_index].priorities_queue = priorities_queue;
+        thread_inputs[thread_index].resources_lock = resources_lock;
     }
 
     *p_thread_inputs = thread_inputs;
