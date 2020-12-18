@@ -152,7 +152,7 @@ error_code_t append_primes_string_to_file(HANDLE tasks_file, lock* resources_loc
     if (status != SUCCESS_CODE)
         return status;
 
-    status = append_line_to_line(tasks_file, primes_string_buffer);
+    status = append_line_to_file(tasks_file, primes_string_buffer);
     // release write lock 
 
     if (status != SUCCESS_CODE)

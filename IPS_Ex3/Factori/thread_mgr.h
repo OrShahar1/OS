@@ -10,7 +10,7 @@
 /// 
 /// inputs:  
 /// outputs: error_code  
-/// summary: cread thread HANDLEs and schedule them together using semaphore
+/// summary: creates thread handles 
 ///          if an error occures -> relase resources
 error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue, lock* resources_lock); 
 

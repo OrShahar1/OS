@@ -18,7 +18,7 @@ error_code_t write_file(HANDLE file, char* line, int bytes_to_write, DWORD* p_by
 
 error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length);
 
-error_code_t append_line_to_line(HANDLE file, char* line); 
+error_code_t append_line_to_file(HANDLE file, char* line); 
 
 // threads api 
 

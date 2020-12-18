@@ -1,13 +1,14 @@
 
-// include headers --------------------------------------
+// include headers ------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <windows.h>
-#include "error_mgr.h"
+
 #include "factorization_thread.h"
 #include "win_api_wrappers.h"
+#include "error_mgr.h"
 
 //  constants -----------------------------------------------------------------
 
@@ -16,24 +17,25 @@ static const int WAIT_FOR_THREADS_TIME = 5000;
 
 // function declarations ------------------------------------------------------
 
-error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num); 
+error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num);
+error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_inputs[], int threads_num, const char* tasks_path, queue* priorities_queue, lock* resources_lock);
 error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num);
 error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num, error_code_t current_status);
 
-
 // function implementations ------------------------------------------------------
 
+/// factorization_threads_manager
+/// inputs:  threads_num, tasks_path, priorities_queue, resources_lock  
+/// outputs: error_code
+/// summary: initializes all the factorization threads' inputs and creates the threads,
+///          afterwards waits for them to finish and releases the resources 
 /// 
-/// inputs:  
-/// outputs: 
-/// summary: 
 error_code_t factorization_threads_manager(int threads_num, const char* tasks_path, queue* priorities_queue, lock* resources_lock) 
 {
     error_code_t status = SUCCESS_CODE;
 
-    HANDLE* thread_handles = NULL;
-
     factorization_thread_input* thread_inputs = NULL;
+    HANDLE* thread_handles = NULL;
 
     thread_handles = (HANDLE*)calloc(threads_num, sizeof(HANDLE));
 
@@ -60,11 +62,12 @@ factorization_threads_manager_exit:
 }
 
 /// initialize_thread_inputs
-/// inputs:   
+/// inputs:  p_thread_inputs, threads_num, tasks_path, priorities_queue,resources_lock 
 /// outputs: error_code 
-/// summary: initialize thread_inputs structs & fields of each thread
-error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_inputs[], int threads_num,
-                                      const char* tasks_path, queue* priorities_queue, lock* resources_lock) 
+/// summary: allocates the threads_inputs array and fills it. 
+/// 
+error_code_t initialize_thread_inputs(factorization_thread_input** p_thread_inputs, int threads_num,
+    const char* tasks_path, queue* priorities_queue, lock* resources_lock)
 {
     error_code_t status = SUCCESS_CODE;
     factorization_thread_input* thread_inputs = NULL;
@@ -82,9 +85,9 @@ error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_input
     // initialize the thread_inputs fields 
     for (thread_index = 0; thread_index < threads_num; thread_index++)
     {
-        thread_inputs[thread_index].tasks_path = tasks_path;
-        thread_inputs[thread_index].priorities_queue = priorities_queue;
-        thread_inputs[thread_index].resources_lock = resources_lock;
+        (thread_inputs + thread_index)->tasks_path = tasks_path;
+        (thread_inputs + thread_index)->priorities_queue = priorities_queue;
+        (thread_inputs + thread_index)->resources_lock = resources_lock;
     }
 
     *p_thread_inputs = thread_inputs;
@@ -92,12 +95,12 @@ error_code_t initialize_thread_inputs(factorization_thread_input* p_thread_input
     return status;
 }
 
-
-
 /// create_threads_and_wait
 /// inputs:  thread_handles, thread_inputs, threads_num
-/// outputs: error code  
-/// summary: creates cipher threads and waits for them to return
+/// outputs: error_code  
+/// summary: creates the factorization threads and waits for them to return' 
+///          in case of timeout --> terminates the threads
+/// 
 error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num)
 {
     error_code_t status = SUCCESS_CODE;
@@ -117,10 +120,9 @@ error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_threa
 
     }
 
-    //wait for all threads to return 
     wait_code = WaitForMultipleObjects(threads_num, thread_handles, TRUE, WAIT_FOR_THREADS_TIME); 
 
-    // make sure there was no wait timeout, if there was terminate threads and return error code
+    // make sure there was no wait timeout, if there was --> terminate threads and return error code
     status = check_wait_code_and_terminate_threads(wait_code, thread_handles, threads_num, BRUTAL_TERMINATION_CODE, __FILE__, __LINE__, __func__);
 
     if (status != SUCCESS_CODE)
@@ -132,11 +134,11 @@ error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_threa
     return status;
 }
 
-
 /// check_threads_exit_code
-/// inputs:  thread_handles ,  threads_num
-/// outputs: error code  
+/// inputs:  thread_handles,  threads_num
+/// outputs: error_code  
 /// summary: checks if threads exit codes were SUCCESS_CODE, if not --> return error 
+/// 
 error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num)
 {
     error_code_t status = SUCCESS_CODE; 
@@ -154,14 +156,14 @@ error_code_t check_threads_exit_code(HANDLE* thread_handles, int threads_num)
         if (thread_exit_code != SUCCESS_CODE)
             return thread_exit_code;
     }
-
     return SUCCESS_CODE;
 }
 
 /// free_threads_resources
-/// inputs:  thread_inputs[] ,  p_thread_start_semaphore , thread_inputs , threads_num
-/// outputs: - 
-/// summary: free all threads' resources
+/// inputs:  thread_handles, thread_inputs, threads_num, current_status
+/// outputs: error_code
+/// summary: close all thread handles, free thread_handles and thread_inputs, update current_status
+/// 
 error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread_input* thread_inputs, int threads_num, error_code_t current_status)
 {
     error_code_t status = SUCCESS_CODE; 
@@ -175,8 +177,7 @@ error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread
 
             if (status != SUCCESS_CODE)
                 current_status = status;
-        }
-        
+        } 
         free(thread_handles);
     }
 
@@ -185,36 +186,3 @@ error_code_t free_threads_resources(HANDLE* thread_handles, factorization_thread
 
     return current_status;
 }
-
-
-////---------------------------------------------------------------------------------
-////---------------------------------------------------------------------------------
-//
-//
-/////// open_empty_output_file
-/////// inputs:  output_path ,  file_size
-/////// outputs: error code  
-/////// summary: open new output file with the correct size 
-////error_code_t open_empty_output_file(const char* output_path, int file_size)
-////{
-////    error_code_t status = SUCCESS_CODE;
-////    HANDLE thread_output_file;
-////    DWORD dwPtr;
-////
-////    thread_output_file = CreateFileA(output_path, GENERIC_WRITE, FILE_SHARE_WRITE, NULL,
-////        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-////
-////    dwPtr = SetFilePointer(thread_output_file, file_size, NULL, FILE_BEGIN);
-////
-////
-////    SetEndOfFile(thread_output_file);
-////
-////open_empty_file_exit:
-////
-////        CloseHandle(thread_output_file);
-////
-////    return status;
-////
-////}
-//
-//

@@ -10,7 +10,10 @@
 
 // functions declarations -----------------------------------------------------
 
-error_code_t get_line_length(HANDLE file, int* p_line_length);
+error_code_t get_line_length(HANDLE file, int* p_line_length); 
+
+error_code_t terminate_threads(HANDLE* thread_handles, int threads_num, DWORD brutal_termination_code); 
+error_code_t terminate_thread(HANDLE thread_handle, DWORD brutal_termination_code, const char* source_file, int source_line, const char* source_func_name);
 
 // functions implementations  -------------------------------------------------
 
@@ -100,8 +103,8 @@ error_code_t set_end_of_file(HANDLE file_handle,
 /// inputs:  file_handle, line, bytes_to_read, p_bytes_read,
 ///          source_file, source_line, source_func_name
 /// outputs: error_code
-/// summary: try to read (bytes_to_read) bytes from the file into the (line) buffer, 
-///          sets the actual amount of byed read with (p_bytes_read)
+/// summary: tries to read (bytes_to_read) bytes from the file into the (line) buffer, 
+///          sets the actual amount of bytes read with (p_bytes_read)
 ///          in case of error --> prints appropriate message specifying the function's caller
 ///          (according to source_file, source_line, source_func_name)
 /// 
@@ -200,42 +203,50 @@ error_code_t get_line_length(HANDLE file_handle, int* p_line_length)
     return status;
 }
 
-error_code_t write_file(HANDLE file, char* line, int bytes_to_write, DWORD* p_bytes_written,
+/// write_file
+/// inputs:  file_handle, line, bytes_to_write, p_bytes_written,
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: tries to write (bytes_to_write) bytes into the file from the (line) buffer, 
+///          sets the actual amount of bytes written with (p_bytes_written)
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
+error_code_t write_file(HANDLE file_handle, char* line, int bytes_to_write, DWORD* p_bytes_written,
                         const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
     BOOL return_code;
 
-    return_code = WriteFile(file, line, bytes_to_write, p_bytes_written, NULL);
+    return_code = WriteFile(file_handle, line, bytes_to_write, p_bytes_written, NULL);
 
     if (return_code == FALSE)
     {
         print_error(MSG_ERR_FILE_WRITING_FAILED, source_file, source_line, source_func_name);
         status = FILE_WRITING_FAILED;
     }
-
     return status;
 }
 
-/// append_line_to_line
-/// inputs:  
-/// outputs: error_code  
-/// summary: 
-error_code_t append_line_to_line(HANDLE file, char* line)
+/// append_line_to_file
+/// inputs:  file_handle, line 
+/// outputs: error_code
+/// summary: appends the string in (line) to the end of the file 
+/// 
+error_code_t append_line_to_file(HANDLE file_handle, char* line)
 {
     error_code_t status = SUCCESS_CODE;
     DWORD bytes_written;
 
-    status = set_file_pointer(file, 0, FILE_END, __FILE__, __LINE__, __func__);
+    status = set_file_pointer(file_handle, 0, FILE_END, __FILE__, __LINE__, __func__);
 
     if (status != SUCCESS_CODE)
         return status;
 
-    status = write_file(file, line, strlen(line), &bytes_written, __FILE__, __LINE__, __func__);
+    status = write_file(file_handle, line, strlen(line), &bytes_written, __FILE__, __LINE__, __func__);
 
     return status;
 }
-
 
 // ----------------------------------------------------------------------------
 //                                 threads api   
@@ -243,18 +254,14 @@ error_code_t append_line_to_line(HANDLE file, char* line)
 
 /// create_thread
 /// inputs:  StartAddress , ParameterPtr , ThreadIdPtr , p_thread_handle
-/// outputs: error code  
+/// outputs: error_code  
 /// summary: creates thread and updates handle pointer 
+/// 
 error_code_t create_thread(LPTHREAD_START_ROUTINE StartAddress, LPVOID ParameterPtr, LPDWORD ThreadIdPtr, HANDLE* p_thread_handle)
 {
     error_code_t status = SUCCESS_CODE;
 
-    HANDLE thread_handle = CreateThread(NULL,             /*  default security attributes */
-        0,                /*  use default stack size */
-        StartAddress,     /*  thread function */
-        ParameterPtr,     /*  argument to thread function */
-        0,                /*  use default creation flags */
-        ThreadIdPtr);     /*  returns the thread identifier */
+    HANDLE thread_handle = CreateThread(NULL, 0, StartAddress, ParameterPtr, 0, ThreadIdPtr);     
 
     if (thread_handle == NULL)
     {
@@ -267,6 +274,14 @@ error_code_t create_thread(LPTHREAD_START_ROUTINE StartAddress, LPVOID Parameter
     return status;
 }
 
+/// get_exit_code_thread
+/// inputs:  thread_handle, line, p_thread_exit_code, 
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: gets the thread's exit_code and sets the (p_thread_exit_code) 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t get_exit_code_thread(HANDLE thread_handle, DWORD* p_thread_exit_code,
                                   const char* source_file, int source_line, const char* source_func_name)
 {
@@ -284,9 +299,11 @@ error_code_t get_exit_code_thread(HANDLE thread_handle, DWORD* p_thread_exit_cod
 }
 
 /// check_wait_code_and_terminate_threads
-/// inputs:  wait_code , thread_handles , threads_num
-/// outputs: error code  
-/// summary: if there is wait timeout --> terminate threads 
+/// inputs:  wait_code, thread_handles, threads_num, brutal_termination_code, 
+///          source_file, source_line, source_func_name 
+/// outputs: error_code  
+/// summary: if there was wait timeout --> terminate threads specifyied by (thread_handles)
+/// 
 error_code_t check_wait_code_and_terminate_threads(DWORD wait_code, HANDLE* thread_handles, int threads_num, DWORD brutal_termination_code,
                                                    const char* source_file, int source_line, const char* source_func_name)
 {
@@ -302,19 +319,19 @@ error_code_t check_wait_code_and_terminate_threads(DWORD wait_code, HANDLE* thre
 }
 
 /// terminate_threads
-/// inputs:  thread_handles , threads_num
-/// outputs: error code  
-/// summary: for each thread that is still active - terminate it, 
+/// inputs:  thread_handles, threads_num, brutal_termination_code 
+/// outputs: error_code  
+/// summary: for each thread in (thread_handles) that is still active - terminate it, 
 ///          if there are no active threads, return wait timeout error  
-error_code_t terminate_threads(HANDLE* thread_handles, int threads_num, DWORD brutal_termination_code,
-                               const char* source_file, int source_line, const char* source_func_name)
+/// 
+error_code_t terminate_threads(HANDLE* thread_handles, int threads_num, DWORD brutal_termination_code)          
 {
     error_code_t status = SUCCESS_CODE;
     DWORD thread_exit_code;
     
     for (int thread_idx = 0; thread_idx < threads_num; thread_idx++)
     {
-        status = get_exit_code_thread(thread_handles[thread_idx], &thread_exit_code, source_file, source_line, source_func_name);
+        status = get_exit_code_thread(thread_handles[thread_idx], &thread_exit_code, __FILE__, __LINE__, __func__);
 
         if (status != SUCCESS_CODE)
             return status;
@@ -322,7 +339,7 @@ error_code_t terminate_threads(HANDLE* thread_handles, int threads_num, DWORD br
         if (thread_exit_code != STILL_ACTIVE)
             continue;
 
-        status = terminate_thread(thread_handles[thread_idx], brutal_termination_code, source_file, source_line, source_func_name);
+        status = terminate_thread(thread_handles[thread_idx], brutal_termination_code, __FILE__, __LINE__, __func__);
       
         if (status != SUCCESS_CODE)
             return status;
@@ -330,8 +347,16 @@ error_code_t terminate_threads(HANDLE* thread_handles, int threads_num, DWORD br
     return THREADS_WAIT_TIMEOUT;
 }
 
+/// terminate_thread
+/// inputs:  thread_handle, brutal_termination_code, 
+///          source_file, source_line, source_func_name 
+/// outputs: error_code  
+/// summary: tries to terminate the thread specified by (thread_handle).
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name) 
+/// 
 error_code_t terminate_thread(HANDLE thread_handle, DWORD brutal_termination_code,
-    const char* source_file, int source_line, const char* source_func_name)
+                              const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
     BOOL return_code;
@@ -350,6 +375,15 @@ error_code_t terminate_thread(HANDLE thread_handle, DWORD brutal_termination_cod
 //                           thread synchronization api   
 // ----------------------------------------------------------------------------
 
+/// create_semaphore
+/// inputs:  p_semaphore_handle, initial_value, max_value, 
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: creates a semaphore with initial value and max 
+///          specified by (initial_value) and (max_value). 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t create_semaphore(HANDLE* p_semaphore_handle, int initial_value, int max_value, 
                               const char* source_file, int source_line, const char* source_func_name)
 {
@@ -366,6 +400,13 @@ error_code_t create_semaphore(HANDLE* p_semaphore_handle, int initial_value, int
     return status;
 }
 
+/// create_mutex
+/// inputs:  p_mutex_handle, source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: creates a mutex (with no initial owner) 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t create_mutex(HANDLE* p_mutex_handle,
                           const char* source_file, int source_line, const char* source_func_name)
 {
@@ -382,6 +423,14 @@ error_code_t create_mutex(HANDLE* p_mutex_handle,
     return status;
 }
 
+/// release_semaphore
+/// inputs:  semaphore, up_amount
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: performs the "up" operation on the semaphore with (up_amount) value. 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t release_semaphore(HANDLE semaphore, int up_amount,
                               const char* source_file, int source_line, const char* source_func_name)
 {
@@ -392,13 +441,20 @@ error_code_t release_semaphore(HANDLE semaphore, int up_amount,
 
     if (return_code == FALSE)
     {
-        print_error(MSG_ERR_THREADS_TERMINATION_FAILED, source_file, source_line, source_func_name);
-        status = THREADS_TERMINATION_FAILED;
+        print_error(MSG_ERR_SEMAPHORE_RELEASE_FAILED, source_file, source_line, source_func_name);
+        status = SEMAPHORE_RELEASE_FAILED;
     }
 
     return status; 
 }
 
+/// release_mutex
+/// inputs:  mutex, source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: releases the mutex. 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t release_mutex(HANDLE mutex,
                            const char* source_file, int source_line, const char* source_func_name)
 {
@@ -409,10 +465,9 @@ error_code_t release_mutex(HANDLE mutex,
 
     if (return_code == FALSE)
     {
-        print_error(MSG_ERR_THREADS_TERMINATION_FAILED, source_file, source_line, source_func_name);
-        status = THREADS_TERMINATION_FAILED;
+        print_error(MSG_ERR_MUTEX_RELEASE_FAILED, source_file, source_line, source_func_name);
+        status = MUTEX_RELEASE_FAILED;
     }
-
     return status;
 }
 
@@ -420,6 +475,15 @@ error_code_t release_mutex(HANDLE mutex,
 //                              general functions 
 // ----------------------------------------------------------------------------
 
+/// wait_for_single_object
+/// inputs:  object_handle, wait_time,
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: waits (wait_time) milliseconds for object to be in signaled state,
+///          in case of timeout --> returns the appropriate status. 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t wait_for_single_object(HANDLE object_handle, DWORD wait_time,
                                     const char* source_file, int source_line, const char* source_func_name)
 {
@@ -437,6 +501,14 @@ error_code_t wait_for_single_object(HANDLE object_handle, DWORD wait_time,
     return status;
 }
 
+/// close_handle
+/// inputs:  object_handle, invalid_handle_value,
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: if (object_handle != invalid_handle_value) closes the handle to the object. 
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t close_handle(HANDLE object_handle, int invalid_handle_value,
                           const char* source_file, int source_line, const char* source_func_name)
 {

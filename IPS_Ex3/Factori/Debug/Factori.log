@@ -1,4 +1,17 @@
-﻿  Lock.c
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(169,76): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
-E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\Lock.c(169,72): warning C4024: 'close_handle': different types for formal and actual parameter 2
-  Factori.vcxproj -> E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Debug\Factori.exe
+﻿  thread_mgr.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\thread_mgr.c(176,67): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\thread_mgr.c(176,63): warning C4024: 'close_handle': different types for formal and actual parameter 2
+  win_api_wrappers.c
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(111,31): warning C4028: formal parameter 1 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(111,50): warning C4028: formal parameter 2 different from declaration
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(316,36): warning C4020: 'terminate_threads': too many actual parameters
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(444,53): error C2065: 'MSG_ERR_SEMAPHORE_RELEASE_FAILED': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(444,53): warning C4047: 'function': 'const char *' differs in levels of indirection from 'int'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(444,21): warning C4024: 'print_error': different types for formal and actual parameter 1
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(445,42): error C2065: 'SEMAPHORE_RELEASE_FAILED': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(468,49): error C2065: 'MSG_ERR_MUTEX_RELEASE_FAILED': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(468,49): warning C4047: 'function': 'const char *' differs in levels of indirection from 'int'
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(468,21): warning C4024: 'print_error': different types for formal and actual parameter 1
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(469,38): error C2065: 'MUTEX_RELEASE_FAILED': undeclared identifier
+E:\My Stuff\01 - Education\myTAU\IV\Y IV A\Introduction to Programming Systems\IPS_Projects\IPS_Ex3\Factori\win_api_wrappers.c(518,46): warning C4047: '!=': 'HANDLE' differs in levels of indirection from 'int'
+  Generating Code...
