@@ -1,16 +1,18 @@
 
+#pragma warning( disable:6001 )
 
-/* 
------------------------------------------------------
+// ------------------------------------------------------
+// ------------------------------------------------------
 
-* check if we should continue thread termination if get_exit_code_thread fails
-//#pragma warning( disable:4047 )
+// read lock before set file pointer?
 
-// add handle array for lock (with enum)
-// check mutex and semaphore release in case of error
 
-// -----------------------------------------------------
-*/
+
+
+
+//-------------------------------------------------------
+// ------------------------------------------------------
+
 // include headers --------------------------------------
 
 #include <stdio.h>
@@ -95,52 +97,6 @@ int main(int argc, char* argv[])
 	// call factorization_thread_manager to create threads and perform the tasks 
 	status = factorization_threads_manager(threads_num, tasks_path, priorities_queue, resources_lock); 
 	
-	if (status != SUCCESS_CODE)
-		goto exit_main;
-
-	/*
-	// ----------------------------------------------
-	int* primes = NULL;
-	int primes_amount = 0;
-	int number = 5*9*1*2*4*8*7*12*3*3*5;
-	char* primes_string = NULL;
-
-	status = get_primes_string(number, &primes_string);
-
-	printf(primes_string);
-
-
-	// The prime factors of 125135426 are: 2, 2, 13, 163, 295
-	// The prime factors of 8 are: 2, 2, 2,
-
-	//---------------------------
-
-	status = get_primes(number, &primes, &primes_amount);
-
-
-	printf("\n-----\n"); 
-
-	if(primes_amount>0)
-		printf("%d", primes[0]);
-
-	for (size_t i = 1; i < primes_amount; i++)
-	{
-		printf(", %d", primes[i]);
-	}
-
-	printf("\n-----\n");
-
-	printf("\n\n%d  -  %d\n\n", primes_amount , (int)sqrt(number)+1);
-
-	//---------------------------
-
-	printf("%s\n%s\n%d %d\n\n", tasks_path, priorities_path, tasks_num, threads_num);
-	print_queue(priorities_queue);
-
-	//---------------------------
-	*/
-	
-	
 exit_main:
 	status = free_main_resources(&priorities_queue, &resources_lock, status);
 	return (int)status;
@@ -197,8 +153,6 @@ void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_pa
 	*threads_number = atoi(cmd_data[THREADS_NUMBER_INDEX]);
 	*tasks_number   = atoi(cmd_data[TASKS_NUMBER_INDEX]);
 }
-
-
 
 /// free_main_resources
 /// inputs:  

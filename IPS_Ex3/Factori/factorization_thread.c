@@ -32,8 +32,13 @@ int WINAPI factorization_thread(LPVOID Argument)
   
     HANDLE tasks_file;
 
+
     // open tasks file for reading / writing 
-    status = open_file(&tasks_file, thread_input->tasks_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING,
+    DWORD desired_access       = GENERIC_READ | GENERIC_WRITE;
+    DWORD share_mode           = FILE_SHARE_READ | FILE_SHARE_WRITE; 
+    DWORD creation_disposition = OPEN_EXISTING;
+
+    status = open_file(&tasks_file, thread_input->tasks_path, desired_access, share_mode, creation_disposition,
                        __FILE__, __LINE__, __func__);
 
     if (status != SUCCESS_CODE)
@@ -56,7 +61,7 @@ error_code_t thread_factorization_execute(HANDLE tasks_file, queue* priorities_q
     error_code_t status = SUCCESS_CODE;
     char* task_line_buffer = NULL;
     char* primes_string_buffer = NULL;
-    int task, task_position;
+    int task = 0, task_position = 0; 
     bool is_empty_queue = false;
 
     while (true)
@@ -96,10 +101,11 @@ error_code_t get_task_position_from_queue(queue* priorities_queue, lock* resourc
     if (status != SUCCESS_CODE)
         return status;
 
-    if (Empty(priorities_queue) == false) 
-    { *p_task_position = Pop(priorities_queue); }
-    else { *p_is_empty_queue = true; }
-   
+    if (Empty(priorities_queue) == false)
+        *p_task_position = Pop(priorities_queue);
+    else  
+        *p_is_empty_queue = true;
+
     status = write_release(resources_lock, QUEUE_LOCK);
 
     return status;
@@ -158,21 +164,6 @@ error_code_t append_primes_string_to_file(HANDLE tasks_file, lock* resources_loc
 
 }
 
-
-/// free_thread_factorization_execute_resources
-/// inputs:  
-/// outputs: error_code   
-/// summary: 
-void free_thread_factorization_execute_resources(char* task_line_buffer, char* primes_string_buffer)
-{
-    if (task_line_buffer != NULL)
-        free(task_line_buffer);
-
-    if (primes_string_buffer != NULL)
-        free(primes_string_buffer);
-}
-
-
 /// free_factorization_thread_resources
 /// inputs:  
 /// outputs: error_code   
@@ -186,4 +177,17 @@ error_code_t free_factorization_thread_resources(HANDLE thread_tasks_file, error
         current_status = status; 
 
     return current_status;
+}
+
+/// free_thread_factorization_execute_resources
+/// inputs:  
+/// outputs: error_code   
+/// summary: 
+void free_thread_factorization_execute_resources(char* task_line_buffer, char* primes_string_buffer)
+{
+    if (task_line_buffer != NULL)
+        free(task_line_buffer);
+
+    if (primes_string_buffer != NULL)
+        free(primes_string_buffer);
 }

@@ -36,20 +36,18 @@ error_code_t InitializeLock(lock** p_my_lock)
 
 	my_lock->readers = 0;
 
-	status = create_semaphore(&(my_lock->thread_in_file), 1, 1, __FILE__, __LINE__, __func__);
-	if (status != SUCCESS_CODE)
-		goto initialize_lock_exit;
-
-	status = create_mutex(&(my_lock->readers_mutex),  __FILE__, __LINE__, __func__);
-	if (status != SUCCESS_CODE)
-		goto initialize_lock_exit;
-
-	status = create_mutex(&(my_lock->turnstile_mutex),  __FILE__, __LINE__, __func__);
+	status = create_semaphore(&(my_lock->sync_objects[NO_THREAD_IN_FILE_SEMAPHORE]), 1, 1, __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		goto initialize_lock_exit;
+	
+	for (sync_object sync_object_index = (SYNC_OBJECTS_START + 1); sync_object_index < SYNC_OBJECTS_NUM; sync_object_index++)
+	{
+		status = create_mutex(&(my_lock->sync_objects[sync_object_index]), __FILE__, __LINE__, __func__);
 
-	status = create_mutex(&(my_lock->queue_mutex), __FILE__, __LINE__, __func__);
+		if (status != SUCCESS_CODE)
+			goto initialize_lock_exit;
+	}
 
 initialize_lock_exit: 
 	*p_my_lock = my_lock;
@@ -62,29 +60,30 @@ error_code_t read_lock(lock* resources_lock)
 	error_code_t current_status, status = SUCCESS_CODE;
 	current_status = status;
 
-	status = wait_for_single_object(resources_lock->turnstile_mutex, TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
+	status = wait_for_single_object(resources_lock->sync_objects[TURNSTILE_MUTEX], TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		current_status = status;
 
-	status = release_mutex(resources_lock->turnstile_mutex, __FILE__, __LINE__, __func__);
+	status = release_mutex(resources_lock->sync_objects[TURNSTILE_MUTEX], __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		current_status = status;
 
-	status = wait_for_single_object(resources_lock->readers_mutex, READERS_WAIT_TIME, __FILE__, __LINE__, __func__);
+	status = wait_for_single_object(resources_lock->sync_objects[READERS_MUTEX], READERS_WAIT_TIME, __FILE__, __LINE__, __func__);
+
 	if (status != SUCCESS_CODE)
 		current_status = status;
 
 	resources_lock->readers += 1;
 	if ((resources_lock->readers) == 1) 
 	{
-		status = wait_for_single_object(resources_lock->thread_in_file, THREAD_IN_FILE_WAIT_TIME, __FILE__, __LINE__, __func__);
+		status = wait_for_single_object(resources_lock->sync_objects[NO_THREAD_IN_FILE_SEMAPHORE], THREAD_IN_FILE_WAIT_TIME, __FILE__, __LINE__, __func__);
 		if (status != SUCCESS_CODE)
 			current_status = status;
 	}
 
-	status = release_mutex(resources_lock->readers_mutex, __FILE__, __LINE__, __func__);
+	status = release_mutex(resources_lock->sync_objects[READERS_MUTEX], __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		current_status = status;
@@ -97,7 +96,7 @@ error_code_t read_release(lock* resources_lock)
 	error_code_t current_status, status = SUCCESS_CODE;
 	current_status = status;
 
-	status = wait_for_single_object(resources_lock->readers_mutex, TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
+	status = wait_for_single_object(resources_lock->sync_objects[READERS_MUTEX], TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		current_status = status;
@@ -106,12 +105,12 @@ error_code_t read_release(lock* resources_lock)
 
 	if ((resources_lock->readers) == 0)
 	{
-		status = release_semaphore(resources_lock->thread_in_file, 1, __FILE__, __LINE__, __func__);
+		status = release_semaphore(resources_lock->sync_objects[NO_THREAD_IN_FILE_SEMAPHORE], 1, __FILE__, __LINE__, __func__);
 
 		if (status != SUCCESS_CODE)
 			current_status = status;
 	}
-	status = release_mutex(resources_lock->readers_mutex, __FILE__, __LINE__, __func__);
+	status = release_mutex(resources_lock->sync_objects[READERS_MUTEX], __FILE__, __LINE__, __func__);
 
 	if (status != SUCCESS_CODE)
 		current_status = status;
@@ -123,20 +122,19 @@ error_code_t write_lock(lock* resources_lock, lock_mode_t lock_mode)
 {
 	error_code_t status = SUCCESS_CODE;
 
-	switch(lock_mode)
+	if (lock_mode == FILE_LOCK)
 	{
-	case FILE_LOCK:
-		status = wait_for_single_object(resources_lock->turnstile_mutex, TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
+		status = wait_for_single_object(resources_lock->sync_objects[TURNSTILE_MUTEX], TURNSTILE_WAIT_TIME, __FILE__, __LINE__, __func__);
 
 		if (status != SUCCESS_CODE)
-			break;
+			return status;
 
-		status = wait_for_single_object(resources_lock->thread_in_file, THREAD_IN_FILE_WAIT_TIME, __FILE__, __LINE__, __func__);
-		break;
-
-	case QUEUE_LOCK:
-		status = wait_for_single_object(resources_lock->queue_mutex, QUEUE_WAIT_TIME, __FILE__, __LINE__, __func__);
-		break;
+		status = wait_for_single_object(resources_lock->sync_objects[NO_THREAD_IN_FILE_SEMAPHORE], THREAD_IN_FILE_WAIT_TIME, __FILE__, __LINE__, __func__);
+	}
+	else
+	{
+		// lock_mode == QUEUE_LOCK
+		status = wait_for_single_object(resources_lock->sync_objects[QUEUE_MUTEX], QUEUE_WAIT_TIME, __FILE__, __LINE__, __func__);
 	}
 	return status;
 }
@@ -145,48 +143,35 @@ error_code_t write_release(lock* resources_lock, lock_mode_t lock_mode)
 {
 	error_code_t status = SUCCESS_CODE;
 
-	switch (lock_mode)
+	if (lock_mode == FILE_LOCK)
 	{
-	case FILE_LOCK:
-		status = release_mutex(resources_lock->turnstile_mutex, __FILE__, __LINE__, __func__);
+		status = release_mutex(resources_lock->sync_objects[TURNSTILE_MUTEX], __FILE__, __LINE__, __func__);
 
 		if (status != SUCCESS_CODE)
-			break;
+			return status;
 
-		status = release_semaphore(resources_lock->thread_in_file, 1, __FILE__, __LINE__, __func__);
-		break;
-
-	case QUEUE_LOCK:
-		status = release_mutex(resources_lock->queue_mutex, __FILE__, __LINE__, __func__);
-
-		break;
+		status = release_semaphore(resources_lock->sync_objects[NO_THREAD_IN_FILE_SEMAPHORE], 1, __FILE__, __LINE__, __func__);
 	}
-	return status;
+	else
+	{
+		// case of lock_mode == QUEUE_LOCK
+		status = release_mutex(resources_lock->sync_objects[QUEUE_MUTEX], __FILE__, __LINE__, __func__);
+	}
+	return status; 
 }
 
 error_code_t DestroyLock(lock** p_my_lock, error_code_t current_status)
 {
 	error_code_t status = SUCCESS_CODE;
 	
-	status = close_handle((*p_my_lock)->readers_mutex, NULL, __FILE__, __LINE__, __func__);
+	for (sync_object sync_object_index = SYNC_OBJECTS_START ; sync_object_index < SYNC_OBJECTS_NUM; sync_object_index++)
+	{
+		status = close_handle((*p_my_lock)->sync_objects[sync_object_index], NULL,
+							  __FILE__, __LINE__, __func__);
 
-	if (status != SUCCESS_CODE)
-		current_status = status;
-
-	status = close_handle((*p_my_lock)->thread_in_file, NULL, __FILE__, __LINE__, __func__);
-
-	if (status != SUCCESS_CODE)
-		current_status = status;
-
-	status = close_handle((*p_my_lock)->turnstile_mutex, NULL, __FILE__, __LINE__, __func__);
-
-	if (status != SUCCESS_CODE)
-		current_status = status;
-
-	status = close_handle((*p_my_lock)->queue_mutex, NULL, __FILE__, __LINE__, __func__);
-
-	if (status != SUCCESS_CODE)
-		current_status = status;
+		if (status != SUCCESS_CODE)
+			current_status = status;
+	}
 
 	free(*p_my_lock);
 

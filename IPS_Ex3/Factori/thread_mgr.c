@@ -59,8 +59,6 @@ factorization_threads_manager_exit:
     return status;
 }
 
-
-
 /// initialize_thread_inputs
 /// inputs:   
 /// outputs: error_code 
@@ -108,7 +106,8 @@ error_code_t create_threads_and_wait(HANDLE* thread_handles, factorization_threa
     int thread_index;
     DWORD  wait_code;
 
-    for (thread_index = 0; thread_index < threads_num; thread_index++){
+    for (thread_index = 0; thread_index < threads_num; thread_index++)
+    {
         thread_input = (LPVOID) & (thread_inputs[thread_index]);
 
         status = create_thread((LPTHREAD_START_ROUTINE)factorization_thread, thread_input,

@@ -67,9 +67,9 @@ error_code_t check_args_num(int argc, int anticipated_args_num)
 }
 
 /// check_if_valid_args
-/// inputs:  threads_num ,  tasks_num, maximum_threads_num
+/// inputs:  threads_num, tasks_num, maximum_threads_num
 /// outputs: error_code 
-/// summary: check validation of threads_num and tasks_num( greater than 0 )  		 
+/// summary: check validation of threads_num and tasks_num ( greater than 0 )  		 
 error_code_t check_if_valid_args(int threads_num, int tasks_num, const int maximum_threads_num)
 {
     if ((threads_num <= 0 || threads_num > maximum_threads_num) || tasks_num < 0)

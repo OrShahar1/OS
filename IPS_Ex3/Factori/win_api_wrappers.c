@@ -7,7 +7,6 @@
 #include "error_mgr.h"
 #include "win_api_wrappers.h"
 
-// constants ------------------------------------------------------------------
 
 // functions declarations -----------------------------------------------------
 
@@ -19,6 +18,15 @@ error_code_t get_line_length(HANDLE file, int* p_line_length);
 //                              files api   
 // ----------------------------------------------------------------------------
 
+/// open_file
+/// inputs:  p_file_handle, file_name, desired_access, share_mode, creation_disposition,
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: opens files according to file_name, 
+///          with desired_access, share_mode and creation_disposition parameters and sets the file handle.
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
 error_code_t open_file(HANDLE* p_file_handle, char* file_name, DWORD desired_access, DWORD share_mode, DWORD creation_disposition,
                        const char* source_file, int source_line, const char* source_func_name)
 {
@@ -27,23 +35,57 @@ error_code_t open_file(HANDLE* p_file_handle, char* file_name, DWORD desired_acc
     HANDLE file = CreateFileA(file_name, desired_access, share_mode, NULL,
         creation_disposition, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    // if file opening failed return with error
     if (file == INVALID_HANDLE_VALUE)
     {
         print_error(MSG_ERR_CANNOT_OPEN_FILE, source_file, source_line, source_func_name);
         status = FILE_OPEN_FAILED;
     }
+
     *p_file_handle = file;
+
     return status;
 }
 
-error_code_t set_end_of_file(HANDLE file, DWORD desired_access, DWORD share_mode, DWORD creation_disposition,
-    const char* source_file, int source_line, const char* source_func_name)
+/// set_file_pointer
+/// inputs:  file_handle, offset, starting_position, 
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: changes the (file_handle) to the desired location in file 
+///          according to the (starting_position) and the (offset)
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
+error_code_t set_file_pointer(HANDLE file_handle, int offset, int starting_position,
+                              const char* source_file, int source_line, const char* source_func_name)
+{
+    error_code_t status = SUCCESS_CODE;
+    DWORD dwPtr;
+
+    dwPtr = SetFilePointer(file_handle, offset, NULL, starting_position);
+
+    if (dwPtr == INVALID_SET_FILE_POINTER)
+    {
+        print_error(MSG_ERR_SET_FILE_POINTER_FAILED, source_file, source_line, source_func_name);
+        status = SET_FILE_POINTER_FAILED;
+    }
+
+    return status;
+}
+
+/// set_end_of_file
+/// inputs:  file_handle, source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: sets the end of file for the file pointed by file_handle
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
+error_code_t set_end_of_file(HANDLE file_handle, 
+                             const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
     BOOL return_code;
 
-    return_code = SetEndOfFile(file);
+    return_code = SetEndOfFile(file_handle);
 
     if (return_code == FALSE)
     {
@@ -54,13 +96,22 @@ error_code_t set_end_of_file(HANDLE file, DWORD desired_access, DWORD share_mode
     return status;
 }
 
-error_code_t read_file(HANDLE file, char *line, int bytes_to_read ,DWORD* p_bytes_read,
+/// read_file
+/// inputs:  file_handle, line, bytes_to_read, p_bytes_read,
+///          source_file, source_line, source_func_name
+/// outputs: error_code
+/// summary: try to read (bytes_to_read) bytes from the file into the (line) buffer, 
+///          sets the actual amount of byed read with (p_bytes_read)
+///          in case of error --> prints appropriate message specifying the function's caller
+///          (according to source_file, source_line, source_func_name)
+/// 
+error_code_t read_file(HANDLE file_handle, char *line, int bytes_to_read, DWORD* p_bytes_read,
                        const char* source_file, int source_line, const char* source_func_name)
 {
     error_code_t status = SUCCESS_CODE;
     BOOL return_code;
 
-    return_code = ReadFile(file, line, bytes_to_read, p_bytes_read, NULL);
+    return_code = ReadFile(file_handle, line, bytes_to_read, p_bytes_read, NULL);
   
     if (return_code == FALSE)
     {
@@ -70,18 +121,21 @@ error_code_t read_file(HANDLE file, char *line, int bytes_to_read ,DWORD* p_byte
     return status;
 }
 
-/// 
-/// inputs:  
-/// outputs:
-/// summary: 
-error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
+/// read_line
+/// inputs:  file_handle, p_line_buffer, p_line_length
+/// outputs: error_code
+/// summary: reads one line from the file into the (*p_line_buffer) 
+///          and sets the length of the line read (p_line_length)
+///          sets the actual amount of byed read with (p_bytes_read)
+///
+error_code_t read_line(HANDLE file_handle, char** p_line_buffer, int* p_line_length)
 {
     error_code_t status = SUCCESS_CODE;
-    DWORD bytes_read;
     char* line_buffer = NULL;
-    int line_length;
+    DWORD bytes_read = 0;
+    int line_length = 0;
 
-    status = get_line_length(file, &line_length);
+    status = get_line_length(file_handle, &line_length);
 
     if (status != SUCCESS_CODE)
         return status;
@@ -93,7 +147,7 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
     if (status != SUCCESS_CODE)
         return status;
 
-    status = read_file(file, line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
+    status = read_file(file_handle, line_buffer, line_length, &bytes_read, __FILE__, __LINE__, __func__);
 
     line_buffer[line_length] = '\0';
 
@@ -103,7 +157,14 @@ error_code_t read_line(HANDLE file, char** p_line_buffer, int* p_line_length)
     return status;
 }
 
-error_code_t get_line_length(HANDLE file, int* p_line_length)
+/// get_line_length
+/// inputs:  file_handle, p_line_length
+/// outputs: error_code
+/// summary: counts the number of bytes in the current line in the file,
+///          after counting, it retrieves the file_handle 
+///          to the begginning of the line so we will be able to read it
+///
+error_code_t get_line_length(HANDLE file_handle, int* p_line_length)
 {
     error_code_t status = SUCCESS_CODE;
 
@@ -113,7 +174,7 @@ error_code_t get_line_length(HANDLE file, int* p_line_length)
     DWORD bytes_read;
 
     // read char until end of line 
-    status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
+    status = read_file(file_handle, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
 
     if (status != SUCCESS_CODE)
         return status;
@@ -125,14 +186,14 @@ error_code_t get_line_length(HANDLE file, int* p_line_length)
         if (char_buffer == '\n')
             break;
 
-        status = read_file(file, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
+        status = read_file(file_handle, &char_buffer, 1, &bytes_read, __FILE__, __LINE__, __func__);
 
         if (status != SUCCESS_CODE)
             return status;
     }
 
     //go to the beginning of the line 
-    status = set_file_pointer(file, -(char_counter), FILE_CURRENT, __FILE__, __LINE__, __func__);
+    status = set_file_pointer(file_handle, -(char_counter), FILE_CURRENT, __FILE__, __LINE__, __func__);
 
     *p_line_length = char_counter;
 
@@ -175,22 +236,6 @@ error_code_t append_line_to_line(HANDLE file, char* line)
     return status;
 }
 
-error_code_t set_file_pointer(HANDLE file, int offset, int starting_position,
-                              const char* source_file, int source_line, const char* source_func_name)
-{
-    error_code_t status = SUCCESS_CODE;
-    DWORD dwPtr;
-
-    dwPtr = SetFilePointer(file, offset, NULL, starting_position);
-
-    if (dwPtr == INVALID_SET_FILE_POINTER)
-    {
-        print_error(MSG_ERR_SET_FILE_POINTER_FAILED, source_file, source_line, source_func_name);
-        status = SET_FILE_POINTER_FAILED;
-    }
-
-    return status;
-}
 
 // ----------------------------------------------------------------------------
 //                                 threads api   

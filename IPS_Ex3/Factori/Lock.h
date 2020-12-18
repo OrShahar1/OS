@@ -13,14 +13,21 @@ typedef enum {
 	FILE_LOCK
 }lock_mode_t;
 
+typedef enum {
+	SYNC_OBJECTS_START,
+	NO_THREAD_IN_FILE_SEMAPHORE = SYNC_OBJECTS_START,  // semaphore(1)
+	READERS_MUTEX,									// mutex 
+	TURNSTILE_MUTEX,								// mutex 
+	QUEUE_MUTEX,								    // mutex 
+	SYNC_OBJECTS_NUM
+}sync_object;	
+
+
 // structs --------------------------------------------------------------------
 
 typedef struct _lock {
+	HANDLE sync_objects[SYNC_OBJECTS_NUM];
 	int readers;
-	HANDLE readers_mutex;  // mutex 
-	HANDLE thread_in_file; // semaphore(1)
-	HANDLE turnstile_mutex;      // mutex
-	HANDLE queue_mutex;      // mutex
 } lock;
 
 // function declarations ------------------------------------------------------

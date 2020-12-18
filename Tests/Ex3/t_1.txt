@@ -1,6 +1,6 @@
 25
 6
 399
-The prime factors of 25 are: 5, 5
-The prime factors of 399 are: 3, 7, 19
 The prime factors of 6 are: 2, 3
+The prime factors of 399 are: 3, 7, 19
+The prime factors of 25 are: 5, 5
