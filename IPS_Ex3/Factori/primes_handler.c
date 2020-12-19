@@ -5,13 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h> 
+
 #include "error_mgr.h"
 #include "primes_handler.h"
-
-// enums  ---------------------------------------------------------------------
-
-
-// structs  -------------------------------------------------------------------
 
 
 // consts  --------------------------------------------------------------------
@@ -21,6 +17,7 @@ static const char* HEADER_PRIMES_STRING = "The prime factors of %d are:";
 static const char* LINE_END = "\r\n";
 
 // functions declarations  ----------------------------------------------------
+
 int get_primes_with_duplicates(int number, int potential_prime, int* primes_array, int* p_primes_amount); 
 char* build_primes_string(char* primes_string, int primes_string_length, int  number, int* primes_array, int primes_amount);
 error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount);
@@ -29,6 +26,14 @@ int get_number_len(int number);
 
 // functions implementations  ----------------------------------------------------
 
+/// get_primes_string
+/// inputs:  number , p_primes_string
+/// outputs: error_code
+/// summary: Calls functions that calculate the decomposition into primary factors.
+///          Creates the decomposition format for primary factors of number by using build_primes_string.
+///          allcote memory for the string with the appropriate size.
+///          Stores the result in p_primes_string.
+///
 error_code_t get_primes_string(int number, char** p_primes_string)
 {
 	error_code_t status = SUCCESS_CODE;
@@ -65,6 +70,11 @@ get_primes_string_exit:
 	return status;
 }
 
+/// build_primes_string
+/// inputs:  primes_string , primes_string_length , number , primes_array , primes_amount
+/// outputs: char*
+/// summary: Creates the decomposition format for primary factors of number 
+///
 char* build_primes_string(char* primes_string, int primes_string_length, int  number, int* primes_array, int primes_amount)
 {
 	
@@ -82,10 +92,12 @@ char* build_primes_string(char* primes_string, int primes_string_length, int  nu
 	
 }
 
-///
-/// inputs:  
-/// outputs: 
-/// summary:  
+/// get_primes
+/// inputs:  number , p_primes_array , p_primes_amount  
+/// outputs: error_code_t
+/// summary: Calculate the decomposition into primary factors of a number by get_primes_with_duplicates. 
+///          Uses the algorithm presented in the homework
+///         
 error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount)
 {
 	error_code_t status = SUCCESS_CODE;
@@ -119,10 +131,11 @@ error_code_t get_primes(int number, int** p_primes_array, int* p_primes_amount)
 	return status;
 }
 
-///
-/// inputs:  
-/// outputs: 
-/// summary:  
+/// get_primes_with_duplicates
+/// inputs:  number , potential_prime , primes_array , p_primes_amount
+/// outputs: error_code_t
+/// summary: Calculate the decomposition into primary factors of a number. 
+///           
 int get_primes_with_duplicates(int number, int potential_prime, int* primes_array, int* p_primes_amount)
 {
 	while (number % potential_prime == 0)
@@ -134,10 +147,11 @@ int get_primes_with_duplicates(int number, int potential_prime, int* primes_arra
 	return number;
 }
 
-///
-/// inputs:  
-/// outputs: 
-/// summary:  
+/// calc_primes_string_len
+/// inputs:  number , primes_array , primes_amount 
+/// outputs: int
+/// summary: Calculates the length of the result string for the need of dynamic allocation 
+///  
 int calc_primes_string_len(int number, int* primes_array, int primes_amount)
 {
 	int index;
@@ -151,9 +165,11 @@ int calc_primes_string_len(int number, int* primes_array, int primes_amount)
 	return primes_string_length;
 }
 
-/// inputs:  
-/// outputs: 
-/// summary:  
+/// get_number_len
+/// inputs:  number  
+/// outputs: int
+/// summary: Returns the number of digits in the number  
+///  
 int get_number_len(int number)
 {
 	int len = 0;

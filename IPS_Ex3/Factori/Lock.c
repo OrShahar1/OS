@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+
 #include "win_api_wrappers.h"
 #include "Lock.h"
 
@@ -21,8 +22,12 @@ static const int QUEUE_WAIT_TIME = 5000;
 
 /// InitializeLock
 /// inputs: lock** p_my_lock
-/// outputs:
-/// summary: 
+/// outputs: error_code
+/// summary: Creates and allocte memory for the lock object.
+///          - Uses one arry of:
+///               - One semaphore
+///               - 3 mutexs
+///          - readers
 error_code_t InitializeLock(lock** p_my_lock)
 {
 	error_code_t status = SUCCESS_CODE;
@@ -55,6 +60,11 @@ initialize_lock_exit:
 	return status;
 }
 
+/// read_lock
+/// inputs:  resources_lock
+/// outputs: error_code
+/// summary: Receives a pointer to the struct of a lock and performs a lock for reading
+///
 error_code_t read_lock(lock* resources_lock)
 {
 	error_code_t current_status, status = SUCCESS_CODE;
@@ -91,6 +101,12 @@ error_code_t read_lock(lock* resources_lock)
 	return current_status;
 }
 
+/// read_release
+/// inputs:  resources_lock
+/// outputs: error_code
+/// summary: Gets a pointer to the struct of a lock and releases the lock from catch to read
+///          that made by the same thread
+///
 error_code_t read_release(lock* resources_lock)
 {
 	error_code_t current_status, status = SUCCESS_CODE;
@@ -118,6 +134,13 @@ error_code_t read_release(lock* resources_lock)
 	return current_status;
 }
 
+/// InitializeLock
+/// inputs:  resources_lock, lock_mode
+/// outputs: error_code
+/// summary: Receives a pointer to the struct of a lock and locks the lock for writing.
+///          Reason for writing is repeated if and only if the lock is not caught for writing and no one catches it
+///          to read.
+///
 error_code_t write_lock(lock* resources_lock, lock_mode_t lock_mode)
 {
 	error_code_t status = SUCCESS_CODE;
@@ -139,6 +162,13 @@ error_code_t write_lock(lock* resources_lock, lock_mode_t lock_mode)
 	return status;
 }
 
+/// write_release
+/// inputs:  resources_lock , lock_mode
+/// outputs: error_code
+/// summary: Gets a pointer to the lock struct and releases the lock from the catch
+///          for writing. 
+///          Note that only the thread that grabbed the lock for writing can release it.
+///
 error_code_t write_release(lock* resources_lock, lock_mode_t lock_mode)
 {
 	error_code_t status = SUCCESS_CODE;
@@ -160,6 +190,12 @@ error_code_t write_release(lock* resources_lock, lock_mode_t lock_mode)
 	return status; 
 }
 
+/// DestroyLock
+/// inputs:  p_my_lock , current_status
+/// outputs: error_code
+/// summary: Gets a pointer to the struct of a lock and releases all its resources.
+///          At the end of the function NULL assigned to the value of the pointer.
+///
 error_code_t DestroyLock(lock** p_my_lock, error_code_t current_status)
 {
 	error_code_t status = SUCCESS_CODE;

@@ -1,3 +1,4 @@
+// include headers ------------------------------------------------------------
 
 #include <windows.h>
 #include <stdio.h>  
@@ -9,8 +10,6 @@
 #include "Queue.h"
 #include "Lock.h"
 
-
-// consts ---------------------------------------------------------------------
 
 // function declarations ------------------------------------------------------
 
@@ -52,7 +51,7 @@ int WINAPI factorization_thread(LPVOID Argument)
 }
 
 /// thread_factorization_execute
-/// inputs:  
+/// inputs:  tasks_file, priorities_queue, resources_lock
 /// outputs: error code   
 /// summary: execute the thread functionality:  
 ///          take task from queue -> read task from file -> perform the factorization -> write to file 
@@ -92,6 +91,12 @@ error_code_t thread_factorization_execute(HANDLE tasks_file, queue* priorities_q
     return status;
 }
 
+/// get_task_position_from_queue
+/// inputs:  priorities_queue, resources_lock, p_task_position, p_is_empty_queue
+/// outputs: error code   
+/// summary: Takes the task location from the queue.
+///          Performs lock protection by accessing the shared resource.
+///            
 error_code_t get_task_position_from_queue(queue* priorities_queue, lock* resources_lock, int* p_task_position, bool* p_is_empty_queue)
 {
     error_code_t status = SUCCESS_CODE;
@@ -111,6 +116,12 @@ error_code_t get_task_position_from_queue(queue* priorities_queue, lock* resourc
     return status;
 }
 
+/// read_task_from_thread
+/// inputs:  tasks_file, resources_lock, task_position, p_task_line_buffer, p_task
+/// outputs: error code   
+/// summary: Produces the appropriate format string for the current task.
+///          Performs lock protection by accessing the shared resource.
+/// 
 error_code_t read_task_from_thread(HANDLE tasks_file, lock* resources_lock, int task_position, char** p_task_line_buffer, int* p_task)
 {
     error_code_t  status = SUCCESS_CODE;
@@ -143,6 +154,12 @@ error_code_t read_task_from_thread(HANDLE tasks_file, lock* resources_lock, int 
     return status;
 }
 
+/// append_primes_string_to_file
+/// inputs:  tasks_file, resources_lock, primes_string_buffer
+/// outputs: error code   
+/// summary: write the appropriate format string to tasks_file.
+///          Performs lock protection by accessing the shared resource.
+/// 
 error_code_t append_primes_string_to_file(HANDLE tasks_file, lock* resources_lock, char* primes_string_buffer)
 {
     error_code_t status = SUCCESS_CODE;
@@ -165,9 +182,10 @@ error_code_t append_primes_string_to_file(HANDLE tasks_file, lock* resources_loc
 }
 
 /// free_factorization_thread_resources
-/// inputs:  
+/// inputs:  thread_tasks_file , current_status
 /// outputs: error_code   
-/// summary: 
+/// summary: free all factorization thread resources 
+///
 error_code_t free_factorization_thread_resources(HANDLE thread_tasks_file, error_code_t current_status)
 {
     error_code_t status = SUCCESS_CODE; 
@@ -180,9 +198,10 @@ error_code_t free_factorization_thread_resources(HANDLE thread_tasks_file, error
 }
 
 /// free_thread_factorization_execute_resources
-/// inputs:  
-/// outputs: error_code   
-/// summary: 
+/// inputs:  task_line_buffer, primes_string_buffer
+/// outputs: -   
+/// summary: free thread factorization resources
+///
 void free_thread_factorization_execute_resources(char* task_line_buffer, char* primes_string_buffer)
 {
     if (task_line_buffer != NULL)

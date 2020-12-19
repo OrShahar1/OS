@@ -1,17 +1,6 @@
 
 #pragma warning( disable:6001 )
 
-// ------------------------------------------------------
-// ------------------------------------------------------
-
-// read lock before set file pointer?
-
-
-
-
-
-//-------------------------------------------------------
-// ------------------------------------------------------
 
 // include headers --------------------------------------
 
@@ -19,15 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
+#include <math.h>
 
 #include "thread_mgr.h"
 #include "error_mgr.h"
 #include "Queue.h" 
 #include "Lock.h" 
-
-
-//#include "thread_mgr.h"
-#include <math.h>
 #include "helpers.h"
 
 // enums  ----------------------------------------------
@@ -49,6 +35,8 @@ static const int MAXIMUM_THREAD_NUM = 64;
 error_code_t fill_priority_queue(queue* my_queue, char* priorities_path);
 void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_path, int* tasks_number, int* threads_number);
 error_code_t free_main_resources(queue** p_my_queue, lock** p_my_lock, error_code_t current_status); 
+
+// functions implementations  -------------------------------------------------
 
 
 int main(int argc, char* argv[])
@@ -102,6 +90,12 @@ exit_main:
 	return (int)status;
 }
 
+/// fill_priority_queue
+/// inputs:  my_queue, priorities_path
+/// outputs: error_code
+/// summary: Opens the priority file and reads values in the order in which they are written.
+///          We will put the values into the queue.
+/// 
 error_code_t fill_priority_queue(queue* my_queue, char* priorities_path) 
 {
 	error_code_t status = SUCCESS_CODE; 
@@ -142,9 +136,10 @@ fill_priority_queue_exit:
 }
 
 /// parse_data_from_cmd
-/// inputs:  argv (command line input) and key, number_of_threads and to_decrypt pointers 
+/// inputs:  argv (command line input) and tasks_path, priority_path, tasks_number and threads_number  
 /// outputs: - 
-/// summary: A function that fills the variables  key, number_of_threads and to_decrypt 
+/// summary: A function that fills the variables  tasks_path, priority_path ,tasks_number and threads_number 
+///
 void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_path, int* tasks_number, int* threads_number)
 {
 	*tasks_path      = cmd_data[TASK_FILE_INDEX];
@@ -155,9 +150,10 @@ void parse_data_from_cmd(char* cmd_data[], char** tasks_path, char** priority_pa
 }
 
 /// free_main_resources
-/// inputs:  
-/// outputs: 
+/// inputs:  p_my_queue, p_my_lock, current_status
+/// outputs: error_code
 /// summary:  free all main resources  
+///
 error_code_t free_main_resources(queue** p_my_queue, lock** p_my_lock, error_code_t current_status)
 {
 	error_code_t status = SUCCESS_CODE;

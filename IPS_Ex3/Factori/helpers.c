@@ -1,7 +1,17 @@
 
+// include headers ------------------------------------------------------------
+
 #include <stdlib.h>
+
 #include "helpers.h"
 
+// functions declarations  ----------------------------------------------------
+
+/// print_queue
+/// inputs:  my_queue
+/// outputs: -
+/// summary: Auxiliary function for printing the queue
+///
 void print_queue(queue* my_queue)
 {
 	if (Empty(my_queue)) {

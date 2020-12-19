@@ -3,3 +3,6 @@
 3
 4
 The prime factors of 1 are:
+The prime factors of 2 are: 2
+The prime factors of 3 are: 3
+The prime factors of 4 are: 2, 2
